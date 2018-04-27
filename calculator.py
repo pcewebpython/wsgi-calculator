@@ -23,7 +23,6 @@ Consider the following URL/Response body pairs as tests:
   http://localhost:8080/add/23/42      => 65
   http://localhost:8080/subtract/23/42 => -19
   http://localhost:8080/divide/22/11   => 2
-  http://localhost:8080/divide/6/0     => HTTP "400 Bad Request"
   http://localhost:8080/               => <html>Here's how to use this page...</html>
 ```
 
