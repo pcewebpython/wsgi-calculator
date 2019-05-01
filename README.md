@@ -4,7 +4,7 @@ Your assignment is to create a WSGI calculator that you can use to add, subtract
 
 You'll use the calculator by visiting an address like: [http://localhost:8080/multiply/3/5](http://localhost:8080/multiply/3/5). Once you've completed the assignment, if you were to run the program and visit this page then you would expect to see a page in your browser with the text "15".
 
-You'll also have to create one more page: an index page at the address http://localhost:8080/ with some text instructions that explain (in just a few sentences) how to use the site.
+You'll also have to create one more page: an index page at the address [http://localhost:8080/](http://localhost:8080/) with some text instructions that explain (in just a few sentences) how to use the site.
 
 ## How to Know When You're Done
 
