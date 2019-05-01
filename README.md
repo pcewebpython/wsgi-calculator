@@ -9,10 +9,10 @@ You'll also have to create one more page: an index page at the address http://lo
 ## How to Know When You're Done
 
 When you have completed the TODOs, you should be able to visit the following pages and see a page with the indicated content.:
-  * [http://localhost:8080/multiply/3/5]  => 15
-  * [http://localhost:8080/add/23/42]  => 65
-  * [http://localhost:8080/subtract/23/42]  => -19
-  * [http://localhost:8080/divide/22/11]  => 2
-  * [http://localhost:8080/]  => Here's how to use this page... (etc.)
+  * [http://localhost:8080/multiply/3/5](http://localhost:8080/multiply/3/5)  => 15
+  * [http://localhost:8080/add/23/42](http://localhost:8080/add/23/42)  => 65
+  * [http://localhost:8080/subtract/23/42](http://localhost:8080/subtract/23/42)  => -19
+  * [http://localhost:8080/divide/22/11](http://localhost:8080/divide/22/11)  => 2
+  * [http://localhost:8080/](http://localhost:8080/)  => Here's how to use this page... (etc.)
 
 There is also a set of tests for you to run, using `python tests.py`.
