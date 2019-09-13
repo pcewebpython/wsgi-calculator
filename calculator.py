@@ -69,7 +69,7 @@ def resolve_path(path):
     return func, args
 
 def application(environ, start_response):
-    # TODO: Your application code from the book database
+    # DONE: Your application code from the book database
     # work here as well! Remember that your application must
     # invoke start_response(status, headers) and also return
     # the body of the response in BYTE encoding.
@@ -99,4 +99,6 @@ def application(environ, start_response):
 if __name__ == '__main__':
     # TODO: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
