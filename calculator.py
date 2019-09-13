@@ -45,14 +45,30 @@ import traceback
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
-
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-
     sum = 0
     for number in args:
         sum += int(number)
+    return str(sum)
 
+def multiply(*args):
+    """ Returns a STRING with the sum of the arguments """
+    sum = 1
+    for number in args:
+        sum *= int(number)
+    return str(sum)
+
+def subtract(*args):
+    """ Returns a STRING with the sum of the arguments """
+    sum = 0
+    for number in args:
+        sum -= int(number)
+    return str(sum)
+
+def divide(*args):
+    """ Returns a STRING with the sum of the arguments """
+    sum = 0
+    for number in args:
+        sum /= int(number)
     return str(sum)
 
 # TODO: Add functions for handling more arithmetic operations.\
