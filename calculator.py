@@ -51,21 +51,21 @@ def add(*args):
     return str(sum)
 
 def multiply(*args):
-    """ Returns a STRING with the sum of the arguments """
+    """ Returns a STRING with the multiple of the arguments """
     sum = 1
     for number in args:
         sum *= int(number)
     return str(sum)
 
 def subtract(*args):
-    """ Returns a STRING with the sum of the arguments """
+    """ Returns a STRING with the difference of the arguments """
     sum = 0
     for number in args:
         sum -= int(number)
     return str(sum)
 
 def divide(*args):
-    """ Returns a STRING with the sum of the arguments """
+    """ Returns a STRING with the divisor of the arguments """
     sum = 0
     for number in args:
         sum /= int(number)
