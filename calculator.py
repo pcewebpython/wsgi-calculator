@@ -40,6 +40,7 @@ To submit your homework:
 
 
 """
+import re
 import traceback
 
 def add(*args):
@@ -54,7 +55,11 @@ def add(*args):
 
     return str(sum)
 
-# TODO: Add functions for handling more arithmetic operations.
+# TODO: Add functions for handling more arithmetic operations.\
+def calc():
+    body = """
+    <h1> Works?????? </h1>
+    """
 
 def resolve_path(path):
     """
@@ -66,8 +71,7 @@ def resolve_path(path):
     # examples provide the correct *syntax*, but you should
     # determine the actual values of func and args using the
     # path.
-    func = add
-    args = ['25', '32']
+
     funcs = {
         '': calc,
         'add': add,
