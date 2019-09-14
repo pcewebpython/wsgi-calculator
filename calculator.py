@@ -78,7 +78,7 @@ def divide(*args):
     return str(sum)
 
 # TODO: Add functions for handling more arithmetic operations.\
-def indexx():
+def index():
     body = """
     <html><h1>Welcome to calculator</h1>
     <p>To add: use URL http://localhost:8080/add/3/5 for 3+5<br>
@@ -101,7 +101,7 @@ def resolve_path(path):
     # path.
 
     funcs = {
-        '': indexx,
+        '': index,
         'add': add,
         'subtract': subtract,
         'multiply': multiply,
