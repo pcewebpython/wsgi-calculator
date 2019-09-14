@@ -59,16 +59,22 @@ def multiply(*args):
 
 def subtract(*args):
     """ Returns a STRING with the difference of the arguments """
-    sum = 0
+    sum = None
     for number in args:
-        sum -= int(number)
+        if sum == None:
+            sum = int(number)
+        else:
+            sum = sum - int(number)
     return str(sum)
 
 def divide(*args):
     """ Returns a STRING with the divisor of the arguments """
-    sum = 0
+    sum = None
     for number in args:
-        sum /= int(number)
+        if sum == None:
+            sum = int(number)
+        else:
+            sum = sum / int(number)
     return str(sum)
 
 # TODO: Add functions for handling more arithmetic operations.\
@@ -91,6 +97,9 @@ def resolve_path(path):
     funcs = {
         '': calc,
         'add': add,
+        'subtract': subtract,
+        'multiply': multiply,
+        'divide': divide,
     }
 
     path = path.strip('/').split('/')
