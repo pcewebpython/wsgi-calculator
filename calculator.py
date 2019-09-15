@@ -40,18 +40,54 @@ To submit your homework:
 
 
 """
-
+import re
+import traceback
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
+    sum = 0
+    for number in args:
+        sum += int(number)
+    return str(sum)
 
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
+def multiply(*args):
+    """ Returns a STRING with the multiple of the arguments """
+    sum = 1
+    for number in args:
+        sum *= int(number)
+    return str(sum)
 
-    return sum
+def subtract(*args):
+    """ Returns a STRING with the difference of the arguments """
+    sum = None
+    for number in args:
+        if sum == None:
+            sum = int(number)
+        else:
+            sum = sum - int(number)
+    return str(sum)
 
-# TODO: Add functions for handling more arithmetic operations.
+def divide(*args):
+    """ Returns a STRING with the divisor of the arguments """
+    sum = None
+    for number in args:
+        if sum == None:
+            sum = int(number)
+        else:
+            sum = sum / int(number)
+    return str(sum)
+
+# TODO: Add functions for handling more arithmetic operations.\
+def index():
+    body = """
+    <html><h1>Welcome to calculator</h1>
+    <p>To add: use URL http://localhost:8080/add/3/5 for 3+5<br>
+    To subtract: use URL http://localhost:8080/subtract/3/5 for 3-5<br>
+    To multiply: use URL http://localhost:8080/multiply/3/5 for 3*5<br>
+    To divide: use URL http://localhost:8080/divide/3/5 for 3/5<br>
+    </html>
+    """
+    return body
 
 def resolve_path(path):
     """
@@ -63,22 +99,56 @@ def resolve_path(path):
     # examples provide the correct *syntax*, but you should
     # determine the actual values of func and args using the
     # path.
-    func = add
-    args = ['25', '32']
+
+    funcs = {
+        '': index,
+        'add': add,
+        'subtract': subtract,
+        'multiply': multiply,
+        'divide': divide,
+    }
+
+    path = path.strip('/').split('/')
+
+    func_name = path[0]
+    print('func_name',func_name)
+    args = path[1:]
+
+    func = funcs[func_name]
 
     return func, args
 
 def application(environ, start_response):
-    # TODO: Your application code from the book database
+    # DONE: Your application code from the book database
     # work here as well! Remember that your application must
     # invoke start_response(status, headers) and also return
     # the body of the response in BYTE encoding.
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [('Content-type', 'text/html')]
+    try:
+        path = environ.get('PATH_INFO', None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 ok"
+    except NameError:
+        status = "404 Not Found"
+        body = "<h1> Not Found</h1>"
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "<h1>Internal Server Error</h1>"
+        print(traceback.format_exc())
+    finally:
+        headers.append(('Content-length', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
+    # done: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
