@@ -111,6 +111,7 @@ def resolve_path(path):
     path = path.strip('/').split('/')
 
     func_name = path[0]
+    print('func_name',func_name)
     args = path[1:]
 
     func = funcs[func_name]
