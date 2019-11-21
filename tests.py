@@ -31,7 +31,6 @@ class WebTestCase(unittest.TestCase):
 
         response = conn.getresponse()
         self.assertEqual(200, response.getcode())
-
         conn.close()
 
         return response
@@ -45,9 +44,11 @@ class WebTestCase(unittest.TestCase):
         b = random.randint(100, 10000)
 
         path = "/add/{}/{}".format(a, b)
-
         response = self.get_response(path)
+        
         self.assertEqual(200, response.getcode())
+
+        
 
         self.assertIn(str(a + b).encode(), response.read())
 
@@ -73,7 +74,7 @@ class WebTestCase(unittest.TestCase):
 
         a = random.randint(10000, 100000)
         b = random.randint(100, 1000)
-
+        
         path = "/subtract/{}/{}".format(a, b)
 
         response = self.get_response(path)
@@ -88,7 +89,7 @@ class WebTestCase(unittest.TestCase):
 
         a = random.randint(100, 1000)
         b = random.randint(10000, 100000)
-
+        
         path = "/subtract/{}/{}".format(a, b)
 
         response = self.get_response(path)
