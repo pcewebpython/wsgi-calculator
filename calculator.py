@@ -48,10 +48,14 @@ def base(*args):
     """returns base index page"""
     return """<html>
     <h1>WSGI Calculator How To</h1>
-    The page works through entering data into the url.  
+    The page works through entering data into the url.  Each parameter is seperated
+    by '/' character. 
     <ul>
-    <li>add: /add/23/42      => 65 </li>
-    </ul>Here's how to use this page...</html>"""
+    <li>add: 2 or more parameters: /add/23/42  => 65 </li>
+    <li>subtract: 2 parameters: /subtract/23/42 => -19</li>
+    <li>multiply: 2 or more parameters: /multiply/3/5   => 15</li>
+    <li>divide: 2 or more parameters: /divide/22/11   => 2</li>
+    </ul></html>"""
 
 
 def add(*args):
