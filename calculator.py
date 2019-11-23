@@ -44,20 +44,37 @@ import traceback
 from functools import reduce
 
 
+def base(*args):
+    """returns base index page"""
+    return """<html>
+    <h1>WSGI Calculator How To</h1>
+    The page works through entering data into the url.  
+    <ul>
+    <li>add: /add/23/42      => 65 </li>
+    </ul>Here's how to use this page...</html>"""
+
+
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
     return str(sum([float(i) for i in args]))
 
+
 def multiply(*args):
     """ Returns STRING with inputs multiplied"""
-    return str(reduce(lambda x, y: float(x)*float(y), args))
+    return str(reduce(lambda x, y: float(x) * float(y), args))
+
 
 def divide(*args):
     """ Returns STRING with inputs multiplied"""
     try:
-        return str(reduce(lambda x, y: float(x)/float(y), args))
+        return str(reduce(lambda x, y: float(x) / float(y), args))
     except ZeroDivisionError:
-      raise ValueError
+        raise ValueError
+
+
+def subtract(*args):
+    """ Returns a STRING with the sum of the arguments """
+    return str(float(args[0]) - float(args[1]))
 
 
 def resolve_path(path):
@@ -66,9 +83,11 @@ def resolve_path(path):
     arguments.
     """
     funcs = {
+        "": base,
         "add": add,
         "multiply": multiply,
-        "divide": divide
+        "divide": divide,
+        "subtract": subtract,
     }
 
     path = path.strip("/").split("/")
@@ -82,7 +101,6 @@ def resolve_path(path):
         raise NameError
 
     return func, args
-
 
 
 def application(environ, start_response):
@@ -112,7 +130,7 @@ def application(environ, start_response):
         status = "422 Unprocessable Entity"
         body = "<h1>Resource found but inputs not valid</h1>"
         print(traceback.format_exc())
-    
+
     finally:
         headers.append(("Content-length", str(len(body))))
         start_response(status, headers)
