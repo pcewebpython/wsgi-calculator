@@ -40,18 +40,16 @@ To submit your homework:
 
 
 """
+import traceback
 
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
+    return str(sum([float(i) for i in args]))
 
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
-
-    return sum
 
 # TODO: Add functions for handling more arithmetic operations.
+
 
 def resolve_path(path):
     """
@@ -64,9 +62,10 @@ def resolve_path(path):
     # determine the actual values of func and args using the
     # path.
     func = add
-    args = ['25', '32']
+    args = ["25", "32"]
 
     return func, args
+
 
 def application(environ, start_response):
     # TODO: Your application code from the book database
@@ -76,9 +75,28 @@ def application(environ, start_response):
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [("Content-type", "text/html")]
+    try:
+        path = environ.get("PATH_INFO", None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 OK"
+    except NameError:
+        status = "404 Not Found"
+        body = "<h1>Not Found</h1>"
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "<h1>Internal Server Error</h1>"
+        print(traceback.format_exc())
+    finally:
+        headers.append(("Content-length", str(len(body))))
+        start_response(status, headers)
+        return [body.encode("utf8")]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from wsgiref.simple_server import make_server
 
     srv = make_server("localhost", 8080, application)
