@@ -41,14 +41,23 @@ To submit your homework:
 
 """
 import traceback
+from functools import reduce
 
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
     return str(sum([float(i) for i in args]))
 
+def multiply(*args):
+    """ Returns STRING with inputs multiplied"""
+    return str(reduce(lambda x, y: float(x)*float(y), args))
 
-# TODO: Add functions for handling more arithmetic operations.
+def divide(*args):
+    """ Returns STRING with inputs multiplied"""
+    try:
+        return str(reduce(lambda x, y: float(x)/float(y), args))
+    except ZeroDivisionError:
+      raise ValueError
 
 
 def resolve_path(path):
@@ -56,15 +65,24 @@ def resolve_path(path):
     Should return two values: a callable and an iterable of
     arguments.
     """
+    funcs = {
+        "add": add,
+        "multiply": multiply,
+        "divide": divide
+    }
 
-    # TODO: Provide correct values for func and args. The
-    # examples provide the correct *syntax*, but you should
-    # determine the actual values of func and args using the
-    # path.
-    func = add
-    args = ["25", "32"]
+    path = path.strip("/").split("/")
+
+    func_name = path[0]
+    args = path[1:]
+
+    try:
+        func = funcs[func_name]
+    except KeyError:
+        raise NameError
 
     return func, args
+
 
 
 def application(environ, start_response):
@@ -90,6 +108,11 @@ def application(environ, start_response):
         status = "500 Internal Server Error"
         body = "<h1>Internal Server Error</h1>"
         print(traceback.format_exc())
+    except ValueError:
+        status = "422 Unprocessable Entity"
+        body = "<h1>Resource found but inputs not valid</h1>"
+        print(traceback.format_exc())
+    
     finally:
         headers.append(("Content-length", str(len(body))))
         start_response(status, headers)
