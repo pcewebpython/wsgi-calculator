@@ -79,6 +79,7 @@ def application(environ, start_response):
     pass
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+
+    srv = make_server("localhost", 8080, application)
+    srv.serve_forever()
