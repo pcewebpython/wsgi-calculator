@@ -58,11 +58,8 @@ def add(*args):
 <a href="/">Back to the list</a>
 """
     
-    if book is None:
-        raise NameError
-    return page.format(**book)
-    sum_nums = sum(args)
 
+    sum_nums = sum(args)
     return page.format(sum_nums)
 
 
@@ -71,9 +68,18 @@ def multiply(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    multiply = "0"
+    page = """
+<h1>multiply</h1>
+<table>
+    <tr><th>Author</th><td>{multiply_nums}</td></tr>
+    # <tr><th>Publisher</th><td>{publisher}</td></tr>
+    # <tr><th>ISBN</th><td>{isbn}</td></tr>
+</table>
+<a href="/">Back to the list</a>
+"""
+    multiply_nums = args[0] * args[1]
 
-    return multiply
+    return page.format(multiply_nums)
 
 
 def subtract(*args):
@@ -81,9 +87,17 @@ def subtract(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    subtract = "0"
-
-    return subtract
+    page = """
+<h1>subtract</h1>
+<table>
+    <tr><th>Author</th><td>{subtract_nums}</td></tr>
+    # <tr><th>Publisher</th><td>{publisher}</td></tr>
+    # <tr><th>ISBN</th><td>{isbn}</td></tr>
+</table>
+<a href="/">Back to the list</a>
+"""
+    subtract_nums = args[0] - args[1]
+    return page.format(subtract_nums)
 
 
 def divide(*args):
@@ -91,7 +105,18 @@ def divide(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    divide = "0"
+    page = """
+<h1>divide</h1>
+<table>
+    <tr><th>Author</th><td>{divide_nums}</td></tr>
+    # <tr><th>Publisher</th><td>{publisher}</td></tr>
+    # <tr><th>ISBN</th><td>{isbn}</td></tr>
+</table>
+<a href="/">Back to the list</a>
+"""
+    divide_nums = args[0] / args[1]
+
+    return page.format(divide_nums)
 
     return divide
 # TODO: Add functions for handling more arithmetic operations.
