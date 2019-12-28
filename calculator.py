@@ -42,25 +42,47 @@ To submit your homework:
 """
 import re
 import traceback
+import pdb
+
+def how_to_index():
+    index = """
+    <html>
+    <head><basic Calculator</title></head>
+    <h1>Calculator</h1>
+    <h2>multiply</h2>
+   <p> http://localhost:8080/multiply/3/5   => 15 </p>
+   <h2>Addition</h2>
+   <p> http://localhost:8080/add/23/42      => 65 </p>
+   <h2>subtract</h2>
+   <p> http://localhost:8080/subtract/23/42 => -19 </p>
+   <h2>divide</h2>
+   <p> http://localhost:8080/divide/22/11   => 2 </p>
+   <h2>main</h2>
+   <p> http://localhost:8080/               => Here's how to use this page.. </p>
+    </html>
+    """
+    return index
+
+
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    page = """
-<h1>Addition</h1>
-<table>
-    <tr><th>Author</th><td>{sum_nums}</td></tr>
-    # <tr><th>Publisher</th><td>{publisher}</td></tr>
-    # <tr><th>ISBN</th><td>{isbn}</td></tr>
-</table>
-<a href="/">Back to the list</a>
-"""
-    
-
-    sum_nums = sum(args)
-    return page.format(sum_nums)
+#     page = """
+# <h1>Addition</h1>
+# <table>
+#     <tr><th>Author</th><td>{sum_nums}</td></tr>
+# </table>
+# <a href="/">Back to the list</a>
+# """
+    nums = []
+    for arg in args:
+        nums.append(arg)
+    sum_nums = int(nums[0])+int(nums[1])
+    #pdb.set_trace()
+    return str(sum_nums)
 
 
 def multiply(*args):
@@ -69,17 +91,20 @@ def multiply(*args):
     # TODO: Fill sum with the correct value, based on the
     # args provided.
     page = """
-<h1>multiply</h1>
-<table>
+    <h1>multiply</h1>
+    <table>
     <tr><th>Author</th><td>{multiply_nums}</td></tr>
     # <tr><th>Publisher</th><td>{publisher}</td></tr>
     # <tr><th>ISBN</th><td>{isbn}</td></tr>
-</table>
-<a href="/">Back to the list</a>
-"""
-    multiply_nums = args[0] * args[1]
-
-    return page.format(multiply_nums)
+    </table>
+    <a href="/">Back to the list</a>
+    """
+    nums = []
+    for arg in args:
+        nums.append(arg)
+    mul_nums = int(nums[0])*int(nums[1])
+    #pdb.set_trace()
+    return str(mul_nums)
 
 
 def subtract(*args):
@@ -96,8 +121,12 @@ def subtract(*args):
 </table>
 <a href="/">Back to the list</a>
 """
-    subtract_nums = args[0] - args[1]
-    return page.format(subtract_nums)
+    nums = []
+    for arg in args:
+        nums.append(arg)
+    subtra_nums = int(nums[0])-int(nums[1])
+    #pdb.set_trace()
+    return str(subtra_nums)
 
 
 def divide(*args):
@@ -114,12 +143,12 @@ def divide(*args):
 </table>
 <a href="/">Back to the list</a>
 """
-    divide_nums = args[0] / args[1]
-
-    return page.format(divide_nums)
-
-    return divide
-# TODO: Add functions for handling more arithmetic operations.
+    nums = []
+    for arg in args:
+        nums.append(arg)
+    div_nums = int(nums[0])/int(nums[1])
+    #pdb.set_trace()
+    return str(div_nums)
 
 def resolve_path(path):
     """
@@ -134,6 +163,7 @@ def resolve_path(path):
     # func = add
     # args = ['25', '32']
     funcs = {
+        '': how_to_index,
         'add': add,
         'multiply': multiply,
         'subtract': subtract,
