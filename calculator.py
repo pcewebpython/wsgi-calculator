@@ -50,15 +50,15 @@ def how_to_index():
     <head><basic Calculator</title></head>
     <h1>Calculator</h1>
     <h2>multiply</h2>
-   <p> http://localhost:8080/multiply/3/5   => 15 </p>
+   <p> <a href="http://localhost:8080/multiply/3/5">http://localhost:8080/multiply/3/5</a>   => 15 </p>
    <h2>Addition</h2>
-   <p> http://localhost:8080/add/23/42      => 65 </p>
+   <p> <a href="http://localhost:8080/add/23/42">http://localhost:8080/add/23/42</a>      => 65 </p>
    <h2>subtract</h2>
-   <p> http://localhost:8080/subtract/23/42 => -19 </p>
+   <p> <a href="http://localhost:8080/subtract/23/42">http://localhost:8080/subtract/23/42</a> => -19 </p>
    <h2>divide</h2>
-   <p> http://localhost:8080/divide/22/11   => 2 </p>
+   <p> <a href="http://localhost:8080/divide/22/11">http://localhost:8080/divide/22/11</a>  => 2 </p>
    <h2>main</h2>
-   <p> http://localhost:8080/               => Here's how to use this page.. </p>
+   <p> <a href="http://localhost:8080">http://localhost:8080</a> => Here's how to use this page.. </p>
     </html>
     """
     return index
@@ -70,19 +70,25 @@ def add(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-#     page = """
-# <h1>Addition</h1>
-# <table>
-#     <tr><th>Author</th><td>{sum_nums}</td></tr>
-# </table>
-# <a href="/">Back to the list</a>
-# """
+    page = """<html>
+    <head>
+        <title>Addition</title>
+    </head>
+        <body>
+       <table>
+    <tr><th>Addition of {} and {} is = </th><td>{}</td></tr>
+    </table>
+<a href="/">Back to the list</a>
+    </body>
+</html>"""
+ 
+
     nums = []
     for arg in args:
         nums.append(arg)
     sum_nums = int(nums[0])+int(nums[1])
     #pdb.set_trace()
-    return str(sum_nums)
+    return page.format(*args,str(sum_nums))
 
 
 def multiply(*args):
@@ -90,21 +96,23 @@ def multiply(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    page = """
-    <h1>multiply</h1>
-    <table>
-    <tr><th>Author</th><td>{multiply_nums}</td></tr>
-    # <tr><th>Publisher</th><td>{publisher}</td></tr>
-    # <tr><th>ISBN</th><td>{isbn}</td></tr>
+    page = """<html>
+    <head>
+        <title>Multiplication</title>
+    </head>
+        <body>
+       <table>
+    <tr><th>Multiplication of {} and {} is = </th><td>{}</td></tr>
     </table>
-    <a href="/">Back to the list</a>
-    """
+<a href="/">Back to the list</a>
+    </body>
+</html>"""
     nums = []
     for arg in args:
         nums.append(arg)
     mul_nums = int(nums[0])*int(nums[1])
     #pdb.set_trace()
-    return str(mul_nums)
+    return page.format(*args, str(mul_nums))
 
 
 def subtract(*args):
@@ -112,21 +120,23 @@ def subtract(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    page = """
-<h1>subtract</h1>
-<table>
-    <tr><th>Author</th><td>{subtract_nums}</td></tr>
-    # <tr><th>Publisher</th><td>{publisher}</td></tr>
-    # <tr><th>ISBN</th><td>{isbn}</td></tr>
-</table>
+    page = """<html>
+    <head>
+        <title>Subtraction</title>
+    </head>
+        <body>
+       <table>
+    <tr><th>Subtraction of {} and {} is = </th><td>{}</td></tr>
+    </table>
 <a href="/">Back to the list</a>
-"""
+    </body>
+</html>"""
     nums = []
     for arg in args:
         nums.append(arg)
     subtra_nums = int(nums[0])-int(nums[1])
     #pdb.set_trace()
-    return str(subtra_nums)
+    return page.format(*args, str(subtra_nums))
 
 
 def divide(*args):
@@ -134,21 +144,23 @@ def divide(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    page = """
-<h1>divide</h1>
-<table>
-    <tr><th>Author</th><td>{divide_nums}</td></tr>
-    # <tr><th>Publisher</th><td>{publisher}</td></tr>
-    # <tr><th>ISBN</th><td>{isbn}</td></tr>
-</table>
+    page = """<html>
+    <head>
+        <title>Division</title>
+    </head>
+        <body>
+       <table>
+    <tr><th>Division of {} and {} is = </th><td>{}</td></tr>
+    </table>
 <a href="/">Back to the list</a>
-"""
+    </body>
+</html>"""
     nums = []
     for arg in args:
         nums.append(arg)
     div_nums = int(nums[0])/int(nums[1])
     #pdb.set_trace()
-    return str(div_nums)
+    return page.format(*args, str(div_nums))
 
 def resolve_path(path):
     """
@@ -177,6 +189,9 @@ def resolve_path(path):
         func = funcs[func_name]
     except KeyError:
         raise NameError
+    # if len(args) != 2:
+    #     raise NotImplementedError("Exactly two arguments are allowed")
+
 
     return func, args
     
@@ -204,6 +219,10 @@ def application(environ, start_response):
         status = "500 Internal server Error"
         body = "<h1>Internal server Error</h1>"
         print(traceback.format_exc())
+    # except NotImplementedError():
+    #     status = "501 Not implemented"
+    #     body = "<h1>Not implemented</h1>"
+    #     print(traceback.format_exc())
     finally:
         headers.append(('content-length', str(len(body))))
         start_response(status, headers)
