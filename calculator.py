@@ -48,9 +48,22 @@ def add(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    sum = "0"
+    page = """
+<h1>Addition</h1>
+<table>
+    <tr><th>Author</th><td>{sum_nums}</td></tr>
+    # <tr><th>Publisher</th><td>{publisher}</td></tr>
+    # <tr><th>ISBN</th><td>{isbn}</td></tr>
+</table>
+<a href="/">Back to the list</a>
+"""
+    
+    if book is None:
+        raise NameError
+    return page.format(**book)
+    sum_nums = sum(args)
 
-    return sum
+    return page.format(sum_nums)
 
 
 def multiply(*args):
@@ -112,7 +125,7 @@ def resolve_path(path):
 
     return func, args
     
-    
+
 def application(environ, start_response):
     # TODO: Your application code from the book database
     # work here as well! Remember that your application must
