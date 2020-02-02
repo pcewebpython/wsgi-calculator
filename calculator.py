@@ -57,7 +57,7 @@ def home(*args):
     <li>Subtraction</li>
     <li>Multiplication</li>
     <li>Division</li>
-    <p>Proper syntax and usage is shown in the examples below.</p>
+    <p>Proper syntax and usage is shown in the examples below. Just be careful not to divide by zero. You might get an interesting HTTP status code!</p>
     <li><a href="add/23/42/">http://localhost:8080/add/23/42</a></li>
     <li><a href="subtract/23/42/">http://localhost:8080/subtract/23/42</a></li>
     <li><a href="multiply/3/5/">http://localhost:8080/multiply/3/5</a></li>
@@ -103,7 +103,10 @@ def divide(*args):
 
     body = '<p>{}</p>'
 
-    quotient = int(args[0]) / int(args[1])
+    try:
+        quotient = int(args[0]) / int(args[1])
+    except ZeroDivisionError:
+        raise ZeroDivisionError
     
     return body.format(str(quotient))
 
@@ -154,6 +157,9 @@ def application(environ, start_response):
     except NameError:
         status = "404 Not Found"
         body = "<h1>Not Found</h1>"
+    except ZeroDivisionError:
+        status = "418 I'm a teapot"
+        body = "<h1><a href='https://en.wikipedia.org/wiki/Hyper_Text_Coffee_Pot_Control_Protocol'>418 I'm a teapot</a></h1>"
     except Exception:
         status = "500 Internal Server Error"
         body = "<h1>Internal Server Error</h1>"
