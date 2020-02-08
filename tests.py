@@ -1,3 +1,5 @@
+""" tests script """
+
 import unittest
 import subprocess
 import http.client
@@ -25,16 +27,20 @@ class WebTestCase(unittest.TestCase):
         """
         Helper function to get a response from a given url, using http.client
         """
+        try:
+            conn = http.client.HTTPConnection('localhost:8080')
+            # conn = http.client.HTTPConnection('localhost:9999')
+            conn.request('GET', url)
 
-        conn = http.client.HTTPConnection('localhost:8080')
-        conn.request('GET', url)
+            response = conn.getresponse()
+            self.assertEqual(200, response.getcode())
 
-        response = conn.getresponse()
-        self.assertEqual(200, response.getcode())
+            conn.close()
 
-        conn.close()
+            return response
 
-        return response
+        except ConnectionRefusedError as err:
+            return print("script re-runs to establish connection: ", err)
 
     def test_add(self):
         """
@@ -125,6 +131,76 @@ class WebTestCase(unittest.TestCase):
         # We're just testing if the word "add" is present in the index
         self.assertIn("add".encode(), response.read())
 
+    # ----------------------------------------
+    def test_division_by_zero(self):
+        """
+        Tests the case when the denominator of fraction is zero
+        """
+        conn = http.client.HTTPConnection('localhost:8080')
+
+        a = random.uniform(100, 1000)
+        b = 0
+        path = "/divide/{}/{}".format(a, b)
+
+        conn.request('GET', path)
+        response = conn.getresponse()
+        conn.close()
+
+        self.assertEqual(400, response.getcode())
+
+    def test_name_error(self):
+        """
+        Tests the case when the path contains letters rather than numbers
+        for addition operation
+        """
+        conn = http.client.HTTPConnection('localhost:8080')
+
+        a = random.uniform(100, 1000)
+        b = 'a'
+        path = "/add/{}/{}".format(a, b)
+
+        conn.request('GET', path)
+        response = conn.getresponse()
+        self.assertEqual(500, response.getcode())
+
+        conn.close()
+
+    def test_missing_input(self):
+        """
+        Tests the case when the path is missing a number
+        for addition operation
+        """
+        conn = http.client.HTTPConnection('localhost:8080')
+
+        a = random.uniform(100, 1000)
+        b = ''
+        path = "/add/{}/{}".format(a, b)
+
+        conn.request('GET', path)
+        response = conn.getresponse()
+        self.assertEqual(200, response.getcode())
+
+        conn.close()
+    # ----------------------------------------
+
 
 if __name__ == '__main__':
     unittest.main()
+
+# =============================================
+# ====== Sample run ===========================
+# (base) C:\Users\Florentin\Desktop\UW3\L4\wsgi-calculator>python -m unittest -vv tests.py
+# test_add (tests.WebTestCase) ... ok
+# test_divide (tests.WebTestCase) ... ok
+# test_division_by_zero (tests.WebTestCase) ... ok
+# test_index_instructions (tests.WebTestCase) ... ok
+# test_missing_input (tests.WebTestCase) ... ok
+# test_multiply (tests.WebTestCase) ... ok
+# test_name_error (tests.WebTestCase) ... ok
+# test_subtract_negative_result (tests.WebTestCase) ... ok
+# test_subtract_positive_result (tests.WebTestCase) ... ok
+
+# ----------------------------------------------------------------------
+# Ran 9 tests in 9.386s
+
+# OK
