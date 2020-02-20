@@ -63,10 +63,49 @@ def resolve_path(path):
     # examples provide the correct *syntax*, but you should
     # determine the actual values of func and args using the
     # path.
-    func = add
-    args = ['25', '32']
-
+    funcs = {'':index, 'add':add, 'multiply':multiply, 'subtract':subtract, 'divide':divide}
+    path = path.strip('/').split('/')
+    operation = path[0]
+    # args  = [path[1], path[2]]
+    args = path[1:]
+    try:
+        func = funcs[operation]
+    except KeyError:
+        raise NameError
     return func, args
+
+def index():
+    body = """
+    <h3>Calculator, how to use</h3>
+    <p>http://localhost:8080/multiply/3/5 =&gt; 15<br />
+    http://localhost:8080/add/23/42 =&gt; 65<br />
+    http://localhost:8080/subtract/23/42 =&gt; -19<br />
+    http://localhost:8080/divide/22/11 =&gt; 2</p>
+    """
+    return body
+
+def add(*args):
+    result = sum(map(int,args))
+    body = '<h1>{} added to {} = {}</h1>'.format(args[0],args[1],result)
+    return body
+
+
+def multiply(*args):
+    result = int(args[0]) * int(args[1])
+    body = '<h1>{} Multiply by {} = {}</h1>'.format(args[0],args[1],result)
+    return body
+
+
+def subtract(*args):
+    result = int(args[0]) - int(args[1])
+    body = '<h1>{} subtract by {} = {}</h1>'.format(args[0],args[1],result)
+    return body
+
+def divide(*args):
+    result = int(args[0]) / int(args[1])
+    body = '<h1>{} divide by {} = {}</h1>'.format(args[0],args[1],result)
+    return body
+
 
 def application(environ, start_response):
     # TODO: Your application code from the book database
@@ -76,9 +115,33 @@ def application(environ, start_response):
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [('Content-type', 'text/html')]
+    try:
+        path = environ.get('PATH_INFO', None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 OK"
+    except NameError:
+        status = '404 Not Found'
+        body = "<h1>Not Found</h1>"
+    except ZeroDivisionError:
+        status = '406 Not Acceptable'
+        body = "Can divide {} by {} - ZeroDivisionError".format(args[0],args[1])
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "<h1>Internal Server Error</h1>"
+        print(traceback.format_exc())
+
+
+    finally:
+        headers.append(('Content-type', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
+
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
