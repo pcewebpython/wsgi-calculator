@@ -44,21 +44,42 @@ To submit your homework:
 """
 
 def tagged(tag, content, end="\n", **kwargs):
-    # Turn kwargs into a collection of usable HTML element attributes.
-    # Or leave the attributes empty if nothing is present.
-    attrs = " ".join([f"{key}={value}" for key, value in kwargs.items()])
+    """
+    Return a properly formatted HTML Web Element.
+
+    Example: tagged("h1", "some content")
+    Returns: <h1>some content</h1>
+
+    Example: tagged("a", "some content", href="some href")
+    Returns: <a href="some href">some content</a>
+
+    :tag:       The HTML tag of the element.
+    :content:   The content of the element
+    :end:       The ending character of the element (Default: "\\n")
+    :kwargs:    The key word arguments to turn into attribtes.
+    """
+    attrs = " ".join([f"{key}=\"{value}\"" for key, value in kwargs.items()])
     attrs = f" {attrs}" if len(attrs) > 0 else ""
 
     return f"<{tag}{attrs}>{content}</{tag}>{end}"
 
 
 def add(*args):
-    """ Returns a STRING with the sum of the arguments """
+    """
+    Return an HTML element with the summed total
+
+    :args:  The numbers to sum.
+    """
     total = sum([int(i) for i in args])
     return tagged("h1", f"Your total is: {total}")
 
 
 def subtract(*args):
+    """
+    Return an HTML element with the subtracted total
+
+    :args:  The numbers to subtract.
+    """
     start = int(args[0])
     to_sub = args[1:]
 
@@ -69,6 +90,11 @@ def subtract(*args):
 
 
 def multiply(*args):
+    """
+    Return an HTML element with the multiplied total
+
+    :args:  The numbers to multiply.
+    """
     start = int(args[0])
     to_mult = args[1:]
 
@@ -79,6 +105,11 @@ def multiply(*args):
 
 
 def divide(*args):
+    """
+    Return an HTML element with the divided total
+
+    :args:  The numbers to divide.
+    """
     start = int(args[0])
     to_divide = args[1:]
 
@@ -89,6 +120,11 @@ def divide(*args):
 
 
 def index(*args):
+    """
+    Return the index text.
+
+    :args:  The HTTP_Host name stored in a list.
+    """
     title = tagged("h1", "WSGI Calculator")
     detail = tagged("p", str("This website will help you calculate numbers.  "
                              "Simply navigate to the operation you want to "
@@ -112,14 +148,11 @@ def index(*args):
 
 def resolve_path(path, environ_host):
     """
-    Should return two values: a callable and an iterable of
-    arguments.
-    """
+    Return the method and arguments to use based on the PATH_INFO
 
-    # TODO: Provide correct values for func and args. The
-    # examples provide the correct *syntax*, but you should
-    # determine the actual values of func and args using the
-    # path.
+    :path:          The path from the environ["PATH_INFO"]
+    :environ_host:  The host name from environ["HTTP_Host"]
+    """
     functions = {"add": add,
                  "subtract": subtract,
                  "multiply": multiply,
@@ -142,12 +175,18 @@ def resolve_path(path, environ_host):
 
 
 def application(environ, start_response):
+    """
+    Run the WSGI application and return an UTF-8 encoded body.
+
+    :environ:         The environment supplied by WSGI
+    :start_response:  The start_response handler supplied by WSGI
+    """
     headers = [('Content-type', 'text/html')]
     try:
         path = environ.get("PATH_INFO", None)
         if not path:
             raise NameError
-        function, args = resolve_path(path, environ["HTTP_HOST"])
+        function, args = resolve_path(path, environ.get("HTTP_HOST", None))
         body = function(*args)
         status = "200 OK"
     except NameError:
@@ -164,6 +203,7 @@ def application(environ, start_response):
         headers.append(('Content-length', str(len(body))))
         start_response(status, headers)
         return [body.encode("utf8")]
+
 
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
