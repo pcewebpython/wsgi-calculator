@@ -44,34 +44,55 @@ import traceback
 
 def home():
   """ Returns a home page with info on using the calculator """
+  home_str = """
+    Thank you for using my WSGI Calculator.<br>
+    You can use this calculator by visiting one of the following pages:<br><br>
+
+    Addition: http://localhost:8080/add/x1/x2<br>
+    Subtraction: http://localhost:8080/subtract/x1/x2<br>
+    Multiplication: http://localhost:8080/multiply/x1/x2<br>
+    Division: http://localhost:8080/divide/x1/x2<br><br>
+
+    where x1 and x2 are the input arguments that you would like to
+    perform addition, subtraction, multiplication, or division
+    operations on.
+  """
+  return home_str
+
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
 
-    total_sum = str(int(args[0]) + int(args[1]))
+    sum = str(int(args[0]) + int(args[1]))
+    sum_str = f"The sum of the arguments provided is: {sum}"
 
-    return total_sum
+    return sum_str
 
 def subtract(*args):
     """ Returns a STRING with the difference of the arguments """
 
-    total_difference = str(int(args[0]) - int(args[1]))
+    difference = str(int(args[0]) - int(args[1]))
+    diff_str = f"The difference of the arguments provided is: {difference}"
 
-    return total_difference
+    return diff_str
 
 def multiply(*args):
     """ Returns a STRING with the product of the arguments """
 
-    total_product = str(int(args[0]) * int(args[1]))
+    product = str(int(args[0]) * int(args[1]))
+    prod_str = f"The product of the arguments provided is: {product}"
 
-    return total_product
+    return prod_str
 
 def divide(*args):
     """ Returns a STRING with the quotient of the arguments """
+    try:
+      quotient = str(int(args[0]) / int(args[1]))
+    except ZeroDivisionError:
+      raise Exception
+    quo_str = f"The quotient of the arguments provided is: {quotient}"
 
-    total_quotient = str(int(args[0]) / int(args[1]))
-
-    return total_quotient
+    return quo_str
 
 def resolve_path(path):
     """
@@ -98,13 +119,6 @@ def resolve_path(path):
     return func, args
 
 def application(environ, start_response):
-    # TODO: Your application code from the book database
-    # work here as well! Remember that your application must
-    # invoke start_response(status, headers) and also return
-    # the body of the response in BYTE encoding.
-    #
-    # TODO (bonus): Add error handling for a user attempting
-    # to divide by zero.
     status = "200 OK"
     headers = [('Content-type', 'text/html')]
     try:
@@ -127,6 +141,6 @@ def application(environ, start_response):
         return [body.encode('utf8')]
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
