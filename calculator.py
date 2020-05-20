@@ -38,45 +38,66 @@ To submit your homework:
   * Commit and push your changes to your fork.
   * Submit a link to your Session03 fork repository!
 """
-
 import traceback
 
+def home():
+	""" Returns a home page with information for using the calculator """
+	home_str = """
+	Here's how to use this page:<br><br>
+	Enter the type of operation, then enter in n1 and n2 separating each
+	item with a backlash.<br>
+	Please use the example below.<br><br>
+	
+	Examples:<br>
+	Addition: http://localhost:8080/add/n1/n2 <br>
+	Subtraction: http://localhost:8080/subtract/n1/n2 <br>
+	Multiplication: http://localhost:8080/multiply/n1/n2 <br>
+	Division: http://localhost:8080/divide/n1/n2 <br><br>
+	"""
+	return home_str
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
+    sum = int(args[0]) + int(args[1])
+    sum_str = f"The sum is {sum}."
+    return sum_str
 
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
+def subtract(*args):
+    """ Returns a STRING with the difference of the arguments """
+    dif = int(args[0]) - int(args[1])
+    dif_str = f"The difference is {dif}."
+    return dif_str
 
-    return sum
+def multiply(*args):
+    """ Returns a STRING with the product of the arguments """
+    pro = int(args[0]) * int(args[1])
+    pro_str = f"The product is {pro}."
+    return pro_str
 
-# TODO: Add functions for handling more arithmetic operations.
+def divide(*args):
+    """ Returns a STRING with the quotient of the arguments """
+    quo = int(args[0]) / int(args[1])
+    quo_str = f"The product is {quo}."
+    return quo_str
 
 def resolve_path(path):
     """
     Should return two values: a callable and an iterable of
     arguments.
     """
+    funcs = {"": home, "add": add, "subtract": subtract, "multiply": multiply, "divide": divide}    
+    path = path.strip('/').split('/')
+    func_name = path[0]
+    args = path[1:]
 
-    # TODO: Provide correct values for func and args. The
-    # examples provide the correct *syntax*, but you should
-    # determine the actual values of func and args using the
-    # path.
-    func = add
-    args = ['25', '32']
-
+    try:
+    	func = funcs[func_name]
+    except KeyError:
+    	raise NameError
     return func, args
 
 def application(environ, start_response):
-    # TODO: Your application code from the book database
-    # work here as well! Remember that your application must
-    # invoke start_response(status, headers) and also return
-    # the body of the response in BYTE encoding.
-    #
-    # TODO (bonus): Add error handling for a user attempting
-    # to divide by zero.
-    headers = [("Content-type", "text/plain")]
+    headers = [("Content-type", "text/html")]
     try:
         path = environ.get('PATH_INFO', None)
         if path is None:
@@ -86,10 +107,10 @@ def application(environ, start_response):
         status = "200 OK"
     except NameError:
         status = "404 Not Found"
-        body = "Not Found"
+        body = "<h1>Not Found</h1>"
     except Exception:
         status = "500 Internal Server Error"
-        body = "Internal Server Error"
+        body = "<h1>Internal Server Error</h1>"
         print(traceback.format_exc())
     finally:
         headers.append(('Content-length', str(len(body))))
@@ -97,8 +118,6 @@ def application(environ, start_response):
         return [body.encode('utf8')]
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
     from wsgiref.simple_server import make_server
     srv = make_server('localhost', 8080, application)
     srv.serve_forever()
