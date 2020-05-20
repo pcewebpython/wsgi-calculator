@@ -37,9 +37,9 @@ To submit your homework:
     that explains how to perform calculations.
   * Commit and push your changes to your fork.
   * Submit a link to your Session03 fork repository!
-
-
 """
+
+import traceback
 
 
 def add(*args):
@@ -76,9 +76,29 @@ def application(environ, start_response):
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [("Content-type", "text/plain")]
+    try:
+        path = environ.get('PATH_INFO', None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 OK"
+    except NameError:
+        status = "404 Not Found"
+        body = "Not Found"
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "Internal Server Error"
+        print(traceback.format_exc())
+    finally:
+        headers.append(('Content-length', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
 
 if __name__ == '__main__':
     # TODO: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
