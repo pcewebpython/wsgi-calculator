@@ -1,3 +1,5 @@
+import traceback
+import numpy as np
 """
 For your homework this week, you'll be creating a wsgi application of
 your own.
@@ -40,18 +42,56 @@ To submit your homework:
 
 
 """
+def index():
+    """Instructions for the calc"""
+    body = """
+    <h1>WSGI Calculator</h1>
+    <p>There are 4 methods:</p>
+    <ul>
+        <li>add</li>
+        <li>subtract</li>
+        <li>multiply</li>
+        <li>divide</li>
+    </ul>
+    <p>To use calculator enter operants in address bar</p>
+    <p>eg. /add/1/2</p>
 
+    
+    """    
+    return body
 
 def add(*args):
-    """ Returns a STRING with the sum of the arguments """
+    """Returns a STRING with the sum of the arguments"""
+    sumation = np.sum([int(i) for i in args])  
+    
+    return str(sumation)
 
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
 
-    return sum
+def subtract(*args):
+    """Returns a STRING with the difference of the arguments"""
+    # np.diff starts with the last number first i guess...
+    # orig = [1,2,3] 3-2-1 = 0
+    # reversed = [1,2,3] 1-2-3 = -4
+    diff = int(np.diff([int(i) for i in reversed(args)]))
+    
+    return str(diff)
 
-# TODO: Add functions for handling more arithmetic operations.
+def multiply(*args):
+    """Returns a STRING with the product of the arguments"""
+    product = np.prod([int(i) for i in args]) 
+    
+    return str(product)
+
+def divide(*args):
+    """Returns a STRING with the quotient of the arguments"""
+    args = [int(i) for i in args]
+    quotient = args[0]
+    for num in args[1:]:
+        if num == 0:
+            raise ZeroDivisionError
+        quotient = quotient / num
+
+    return str(quotient)
 
 def resolve_path(path):
     """
@@ -59,26 +99,55 @@ def resolve_path(path):
     arguments.
     """
 
-    # TODO: Provide correct values for func and args. The
-    # examples provide the correct *syntax*, but you should
-    # determine the actual values of func and args using the
-    # path.
-    func = add
-    args = ['25', '32']
+    func_dict = {
+        "": index,
+        "add": add,
+        "subtract": subtract,
+        "multiply": multiply,
+        "divide": divide
+    }
+
+    path = path.strip("/").split("/")
+    func = path[0]
+    args = path[1:]
+    try:
+        func = func_dict[func]
+    except KeyError:
+        raise NameError
 
     return func, args
 
 def application(environ, start_response):
-    # TODO: Your application code from the book database
-    # work here as well! Remember that your application must
-    # invoke start_response(status, headers) and also return
-    # the body of the response in BYTE encoding.
-    #
-    # TODO (bonus): Add error handling for a user attempting
-    # to divide by zero.
-    pass
+    headers = [("Content-type", "text/html")]
+    try:
+        path = environ.get('PATH_INFO', None)
+        print(path)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 OK"
+    
+    except ZeroDivisionError:
+        status = "404 Bad Request"
+        body = "<h1>Cannot Divide by Zero</h1>"
+                            
+    except NameError:
+        status = "404 Not Found"
+        body = "<h1>Not Found</h1>"
+        
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "<h1>Internal Server Error</h1>"
+        print(traceback.format_exc())
+        
+    finally:
+        headers.append(('Content-length', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
+    
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
