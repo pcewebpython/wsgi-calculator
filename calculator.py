@@ -1,3 +1,6 @@
+import re
+import traceback
+
 """
 For your homework this week, you'll be creating a wsgi application of
 your own.
@@ -44,14 +47,50 @@ To submit your homework:
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
-
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    sum = "0"
+    try:
+        res = str(int(args[0]) + int(args[1]))
+        return '{} + {} = {}'.format(args[0], args[1], res)
+    except ValueError:
+        raise ValueError
 
-    return sum
+def substract(*args):
+    """ Returns a STRING with the subtract of the arguments """
+    try:
+        res = str(int(args[0]) - int(args[1]))
+        return '{} - {} = {}'.format(args[0], args[1], res)
+    except ValueError:
+        raise ValueError
 
-# TODO: Add functions for handling more arithmetic operations.
+def multiply(*args):
+    """ Returns a STRING with the multiply of the arguments """
+    try:
+        res = str(int(args[0]) * int(args[1]))
+        return '{} * {} = {}'.format(args[0], args[1], res)
+    except ValueError:
+        raise ValueError
+
+def divide(*args):
+    """ Returns a STRING with the divide of the arguments """
+    try:
+        res = str(int(args[0]) / int(args[1]))
+        return '{} / {} = {}'.format(args[0], args[1], res)
+    except ValueError:
+        if args[1] == 0:
+            raise ZeroDivisionError
+        raise ValueError
+
+def instructions():
+    """ Returns a STRING about how to use the calculator """
+    ins = """
+            <h1> Here is how to use the calculator:</h1>
+            <li> Input URL http://localhoat:8080/add/2/3 for 2 + 3</li>
+            <li> Input URL http://localhoat:8080/multiply/2/3 for 2 * 3</li>
+            <li> Input URL http://localhoat:8080/subtract/2/3 for 2 - 3</li>
+            <li> Input URL http://localhoat:8080/divide/2/3 for 2 / 3</li>
+    """
+    return ins
 
 def resolve_path(path):
     """
@@ -63,10 +102,23 @@ def resolve_path(path):
     # examples provide the correct *syntax*, but you should
     # determine the actual values of func and args using the
     # path.
-    func = add
-    args = ['25', '32']
+    functions = {
+        '': instructions,
+        'add': add,
+        'subtract': substract,
+        'multiply': multiply,
+        'divide': divide
+    }
+    path = path.strip('/').split('/')
+    func_name = path[0]
+    func_args = path[1:]
 
-    return func, args
+    try:
+        func = functions[func_name]
+    except KeyError:
+        raise NameError
+    finally:
+        return func, func_args
 
 def application(environ, start_response):
     # TODO: Your application code from the book database
@@ -76,9 +128,39 @@ def application(environ, start_response):
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [('Content-type', 'text/html')]
+    try:
+        path = environ.get("PATH_INFO", None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        #if len(args) == 1 or len(args) > 2:
+        #    raise ValueError
+        body = func(*args)
+        status = '200 OK'
+    except ValueError:
+        status = '500 Internal Server Error'
+        body = '<h1>Unable to finish the calculation. Please provide two numbers.</h1>'
+    except NameError:
+        status = '404 Not Found'
+        body = '<h1>404 Operation Method Not Found</h1>'
+    except ZeroDivisionError:
+        status = '500 Internal Server Error'
+        body = '<h1>Zero Division Error!</h1>'
+    except Exception:
+        status = '500 Internal Server Error'
+        body = '<h1>Internal Server Error </h1>'
+        print(traceback.format_exc())
+    finally:
+        headers.append(('Content-len', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
+
 
 if __name__ == '__main__':
     # TODO: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('127.0.0.1', 8080, application)
+    #srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
