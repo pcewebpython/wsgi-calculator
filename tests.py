@@ -26,7 +26,7 @@ class WebTestCase(unittest.TestCase):
         Helper function to get a response from a given url, using http.client
         """
 
-        conn = http.client.HTTPConnection('localhost:8080')
+        conn = http.client.HTTPConnection('127.0.0.1:8080')
         conn.request('GET', url)
 
         response = conn.getresponse()
