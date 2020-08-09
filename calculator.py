@@ -42,16 +42,97 @@ To submit your homework:
 """
 
 
+def instructions():
+    body = """
+        <h1>Calculator Instructions</h1>
+        <h3>Enter http://localhost:8080/ <br/>
+            Then the operation followed by /<br/>
+            Then the two numbers separated by /</h3>
+        <ul>
+            <li>To add enter a URL like this: 
+            <a href="/add/4/8">http://localhost:8080/add/4/8</a></li>
+            <li>To subtract enter a URL like this: 
+            <a href="/subtract/10/5">http://localhost:8080/subtract/10/5</a></li>
+            <li>To multiply enter a URL like this: 
+            <a href="/multiply/3/6">http://localhost:8080/multiply/3/6</a></li>
+            <li>To divide enter a URL like this: 
+            <a href="/divide/20/10">http://localhost:8080/divide/20/10</a></li>
+            
+    """
+    return body
+
+
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
+    try:
+        answer = int(args[0])+int(args[1])
+        body = f"""
+        <h3>The sum of {args[0]} and {args[1]} is: {answer}</h3>
+        <a href="/">Return to instructions</a>
+        """
+    except (ValueError, TypeError):
+        body = f"""
+        <h3>Unable to add {args[0]} and {args[1]}</h3>
+        <a href="/">Return to instructions</a>
+        """
 
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
+    return body
 
-    return sum
 
-# TODO: Add functions for handling more arithmetic operations.
+def subtract(*args):
+    """ Returns a STRING with the difference of the arguments """
+    try:
+        answer = int(args[0])-int(args[1])
+        body = f"""
+        <h3>The difference between {args[0]} and {args[1]} is: {answer}</h3>
+        <a href="/">Return to instructions</a>
+        """
+    except (ValueError, TypeError):
+        body = f"""
+        <h3>Unable to subtract {args[1]} from {args[0]}</h3>
+        <a href="/">Return to instructions</a>
+        """
+
+    return body
+
+
+def multiply(*args):
+    """ Returns a STRING with the product of the arguments """
+    try:
+        answer = int(args[0])*int(args[1])
+        body = f"""
+        <h3>The product of {args[0]} and {args[1]} is: {answer}</h3>
+        <a href="/">Return to instructions</a>
+        """
+    except (ValueError, TypeError):
+        body = f"""
+        <h3>Unable to multiply {args[0]} and {args[1]}</h3>
+        <a href="/">Return to instructions</a>
+        """
+
+    return body
+
+
+def divide(*args):
+    """ Returns a STRING with the dividend of the arguments """
+    try:
+        answer = int(args[0])/int(args[1])
+        body = f"""
+        <h3>The dividend of {args[0]} and {args[1]} is: {answer}</h3>
+        <a href="/">Return to instructions</a>
+        """
+    except (ValueError, TypeError):
+        body = f"""
+        <h3>Unable to divide {args[0]} by {args[1]}</h3>
+        <a href="/">Return to instructions</a>
+        """
+    except ZeroDivisionError:
+        body = f"""
+        <h3>Unable to divide by 0</h3>
+        <a href="/">Return to instructions</a>
+        """
+
+    return body
 
 def resolve_path(path):
     """
@@ -59,26 +140,48 @@ def resolve_path(path):
     arguments.
     """
 
-    # TODO: Provide correct values for func and args. The
-    # examples provide the correct *syntax*, but you should
-    # determine the actual values of func and args using the
-    # path.
-    func = add
-    args = ['25', '32']
+    funcs = {
+        '/': instructions,
+        '': instructions,  # if nothing additional in path then show instructions
+        'add': add,
+        'subtract': subtract,
+        'multiply': multiply,
+        'divide': divide,
+    }
+    path = path.strip('/').split('/')
+    func_name = path[0]
+    args = path[1:]
+    try:
+        func = funcs[func_name]
+    except KeyError:
+        raise NameError
 
     return func, args
 
 def application(environ, start_response):
-    # TODO: Your application code from the book database
-    # work here as well! Remember that your application must
-    # invoke start_response(status, headers) and also return
-    # the body of the response in BYTE encoding.
-    #
-    # TODO (bonus): Add error handling for a user attempting
-    # to divide by zero.
-    pass
+    headers = [('Content-type', 'text/html')]
+    status = ""
+    body = ""
+    try:
+        path = environ.get('PATH_INFO', None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 OK"
+    except NameError:
+        status = "404 Not Found"
+        body = "<h1>Not Found</h1"
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "<h1>Internal Server Error</h1>"
+    finally:
+        headers.append(('Content-length', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
