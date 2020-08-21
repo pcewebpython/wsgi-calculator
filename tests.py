@@ -30,6 +30,7 @@ class WebTestCase(unittest.TestCase):
         conn.request('GET', url)
 
         response = conn.getresponse()
+
         self.assertEqual(200, response.getcode())
 
         conn.close()
