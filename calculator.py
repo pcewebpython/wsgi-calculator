@@ -62,7 +62,6 @@ def add(*args):
     # DONE: Fill sum with the correct value, based on the
     # args provided.
 
-    print (f"ddddddddddd arg1={args[0]} arg2={args[1]}")
     oper_a = args[0]
     oper_b = args[1]
     
@@ -72,13 +71,27 @@ def add(*args):
     
     return sum
 
+def multiply(*args):
+    """ Returns a STRING with the product of the arguments """
+
+    # DONE: Fill product with the correct value, based on the
+    # args provided.
+
+    multiplicand = args[0]
+    multiplier = args[1]
+    
+    product = str(int(multiplicand) * int(multiplier))
+
+    body = product
+    
+    return product
+
 def subtract(*args):
     """ Returns a STRING with the difference of the arguments """
 
     # DONE: Fill difference with the correct value, based on the
     # args provided.
 
-    print (f"eeeeeeeeee arg1={args[0]} arg2={args[1]}")
     minuend = args[0]
     subtrahend = args[1]
     
@@ -95,7 +108,6 @@ def divide(*args):
     # DONE: Fill quotient with the correct value, based on the
     # args provided.
 
-    print (f"fffffffffff arg1={args[0]} arg2={args[1]}")
     dividend = args[0]
     divisor = args[1]
     
@@ -108,27 +120,19 @@ def divide(*args):
     
 def resolve_path(path):
 
-    print ("CCCCCCCCC 111111111111")
-    
     funcs = {
         '': add,
-        'book': add,
         'add': add,
         'subtract': subtract,
+        'multiply': multiply,
         'divide': divide,
         
     }
 
-    print("CCCCC 22222222222")
-
     path = path.strip('/').split('/')
-
-    print("CCCCC 22222222222")
 
     func_name = path[0]
     args = path[1:]
-
-    print("CCCCC 22222222222")
 
     # DONE: Provide correct values for func and args. The
     # examples provide the correct *syntax*, but you should
@@ -140,30 +144,14 @@ def resolve_path(path):
     except KeyError:
         raise NameError
 
-    print("CCCCC 33333333")
-        
-    return func, args
-
-def resolve_path_TODO(path):
-    """
-    Should return two values: a callable and an iterable of
-    arguments.
-    """
-
-    # TODO: Provide correct values for func and args. The
-    # examples provide the correct *syntax*, but you should
-    # determine the actual values of func and args using the
-    # path.
-    func = add
-    args = ['25', '32']
-
     return func, args
 
 def application(environ, start_response):
-    # Done:
+    # DONE: Your application code from the book database
+    # work here as well! Remember that your application must
+    # invoke start_response(status, headers) and also return
+    # the body of the response in BYTE encoding.
 
-    print("BBBBBB")
-    
     pass
     
     body = ""
@@ -193,10 +181,8 @@ def application(environ, start_response):
 
     
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
+    # DONE: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
-    pass
-if __name__ == '__main__':
     from wsgiref.simple_server import make_server
     srv = make_server('localhost', 8080, application)
     srv.serve_forever()
