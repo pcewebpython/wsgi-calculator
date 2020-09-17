@@ -1,3 +1,16 @@
+import re
+import traceback
+
+TEST_BODY = """<html>
+<head>
+<title>Test Mike - WSGI Assignment</title>
+</head>
+<body>
+<p>Hello world Mike</p>
+</body>
+</html>"""
+
+
 """
 For your homework this week, you'll be creating a wsgi application of
 your own.
@@ -41,19 +54,97 @@ To submit your homework:
 
 """
 
+# DONE: Include other functions for handling more arithmetic operations.
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
 
-    # TODO: Fill sum with the correct value, based on the
+    # DONE: Fill sum with the correct value, based on the
     # args provided.
-    sum = "0"
 
+    print (f"ddddddddddd arg1={args[0]} arg2={args[1]}")
+    oper_a = args[0]
+    oper_b = args[1]
+    
+    sum = str(int(oper_a) + int(oper_b))
+
+    body = sum
+    
     return sum
 
-# TODO: Add functions for handling more arithmetic operations.
+def subtract(*args):
+    """ Returns a STRING with the difference of the arguments """
 
+    # DONE: Fill difference with the correct value, based on the
+    # args provided.
+
+    print (f"eeeeeeeeee arg1={args[0]} arg2={args[1]}")
+    minuend = args[0]
+    subtrahend = args[1]
+    
+    difference = str(int(minuend) - int(subtrahend))
+
+    body = difference
+    
+    return difference
+
+    
+def divide(*args):
+    """ Returns a STRING with the difference of the arguments """
+
+    # DONE: Fill quotient with the correct value, based on the
+    # args provided.
+
+    print (f"fffffffffff arg1={args[0]} arg2={args[1]}")
+    dividend = args[0]
+    divisor = args[1]
+    
+    quotient = str(int(dividend) / int(divisor))
+
+    body = quotient
+    
+    return quotient
+
+    
 def resolve_path(path):
+
+    print ("CCCCCCCCC 111111111111")
+    
+    funcs = {
+        '': add,
+        'book': add,
+        'add': add,
+        'subtract': subtract,
+        'divide': divide,
+        
+    }
+
+    print("CCCCC 22222222222")
+
+    path = path.strip('/').split('/')
+
+    print("CCCCC 22222222222")
+
+    func_name = path[0]
+    args = path[1:]
+
+    print("CCCCC 22222222222")
+
+    # DONE: Provide correct values for func and args. The
+    # examples provide the correct *syntax*, but you should
+    # determine the actual values of func and args using the
+    # path.
+    
+    try:
+        func = funcs[func_name]
+    except KeyError:
+        raise NameError
+
+    print("CCCCC 33333333")
+        
+    return func, args
+
+def resolve_path_TODO(path):
     """
     Should return two values: a callable and an iterable of
     arguments.
@@ -69,16 +160,43 @@ def resolve_path(path):
     return func, args
 
 def application(environ, start_response):
-    # TODO: Your application code from the book database
-    # work here as well! Remember that your application must
-    # invoke start_response(status, headers) and also return
-    # the body of the response in BYTE encoding.
-    #
-    # TODO (bonus): Add error handling for a user attempting
-    # to divide by zero.
-    pass
+    # Done:
 
+    print("BBBBBB")
+    
+    pass
+    
+    body = ""
+    headers = [("Content-type", "text/html")]
+    try:
+        path = environ.get('PATH_INFO', None)
+        print(f"BBBBBB path = -{path}-")
+        if path is None:
+            raise NameError
+        body = TEST_BODY        #***MMM temp only test
+        print("BBBBBB calling resolve_path")
+        func, args = resolve_path(path)
+        print("BBBBBB return from resolve_path")
+        body = func(*args)
+        status = "200 OK"
+    except NameError:
+        status = "404 Not Found"
+        body = "<h1>Not Found</h1>"
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "<h1>Internal Server Error</h1>"
+        print(traceback.format_exc())
+    finally:
+        headers.append(('Content-length', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
+
+    
 if __name__ == '__main__':
     # TODO: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
     pass
+if __name__ == '__main__':
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
