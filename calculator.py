@@ -1,15 +1,6 @@
 import re
 import traceback
 
-TEST_BODY = """<html>
-<head>
-<title>Test Mike - WSGI Assignment</title>
-</head>
-<body>
-<p>Hello world Mike</p>
-</body>
-</html>"""
-
 
 """
 For your homework this week, you'll be creating a wsgi application of
@@ -54,8 +45,43 @@ To submit your homework:
 
 """
 
-# DONE: Include other functions for handling more arithmetic operations.
+dict_instrs = {
+    'instrs': {
+        'add_description': 'Add two numbers',
+        'add_example': 'http://localhost:8080//add/10/5',
+        'subtract_description': 'Subtract two numbers',
+        'subtract_example': 'http://localhost:8080//subtract/10/5',
+        'multiply_description': 'Multiply two numbers',
+        'multiply_example': 'http://localhost:8080/multiply//10/5',
+        'divide_description': 'Divide two numbers',
+        'divide_example': 'http://localhost:8080/divide//10/5',
+    },
+    'help1': {
+    },
+    'help2': {
+    },
+    'help3': {
+    },
+}
 
+# DONE: Include usage instructions home page
+
+def calculator_usage_instructions(*args):
+    page = """
+<h1>"Calculator Usage Instructions:"</h1>
+<table>
+    <tr><th>Usage: Operator//arg1//arg2</th><td>"site: http://localhost:8080"</td></tr>
+    <tr><th>{add_description}</th><td>{add_example}</td></tr>
+    <tr><th>{subtract_description}</th><td>{subtract_example}</td></tr>
+    <tr><th>{multiply_description}</th><td>{multiply_example}</td></tr>
+    <tr><th>{divide_description}</th><td>{divide_example}</td></tr>
+</table>
+"""
+    instrs = dict_instrs['instrs']
+    return page.format(**instrs)
+
+# DONE: Include other functions for handling more arithmetic operations.
+    
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
 
@@ -121,7 +147,7 @@ def divide(*args):
 def resolve_path(path):
 
     funcs = {
-        '': add,
+        '': calculator_usage_instructions,
         'add': add,
         'subtract': subtract,
         'multiply': multiply,
@@ -158,13 +184,9 @@ def application(environ, start_response):
     headers = [("Content-type", "text/html")]
     try:
         path = environ.get('PATH_INFO', None)
-        print(f"BBBBBB path = -{path}-")
         if path is None:
             raise NameError
-        body = TEST_BODY        #***MMM temp only test
-        print("BBBBBB calling resolve_path")
         func, args = resolve_path(path)
-        print("BBBBBB return from resolve_path")
         body = func(*args)
         status = "200 OK"
     except NameError:
