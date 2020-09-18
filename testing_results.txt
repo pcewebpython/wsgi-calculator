@@ -1,0 +1,11 @@
+test_add (tests.WebTestCase) ... ok
+test_divide (tests.WebTestCase) ... ok
+test_index_instructions (tests.WebTestCase) ... ok
+test_multiply (tests.WebTestCase) ... ok
+test_subtract_negative_result (tests.WebTestCase) ... ok
+test_subtract_positive_result (tests.WebTestCase) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 6.186s
+
+OK
