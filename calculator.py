@@ -40,7 +40,14 @@ To submit your homework:
 
 
 """
-
+def homepage():
+    all_books = DB.titles()
+    body = ['<h1>Calculator</h1>', '<ul>']
+    item_template = '<li><a href="/book/{id}">{title}</a></li>'
+    for book in all_books:
+        body.append(item_template.format(**book))
+    body.append('</ul>')
+    return '\n'.join(body)
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
@@ -48,6 +55,39 @@ def add(*args):
     # TODO: Fill sum with the correct value, based on the
     # args provided.
     sum = "0"
+    for item in args:
+        sum += item
+    return sum
+
+def subtract(*args):
+    """ Returns a STRING with the sum of the arguments """
+
+    # TODO: Fill sum with the correct value, based on the
+    # args provided.
+    sum = "0"
+    for item in args:
+        sum -= item
+    return sum
+
+def multiply(*args):
+    """ Returns a STRING with the sum of the arguments """
+
+    # TODO: Fill sum with the correct value, based on the
+    # args provided.
+    sum = "0"
+    for item in args:
+        sum *= item
+
+    return sum
+
+def divide(*args):
+    """ Returns a STRING with the sum of the arguments """
+
+    # TODO: Fill sum with the correct value, based on the
+    # args provided.
+    sum = "0"
+    for item in args:
+        sum /= item
 
     return sum
 
@@ -63,10 +103,30 @@ def resolve_path(path):
     # examples provide the correct *syntax*, but you should
     # determine the actual values of func and args using the
     # path.
-    func = add
-    args = ['25', '32']
+    #func = add
+    #args = ['25', '32']
+
+
+    funcs = {
+        '': home,
+        'add': add,
+        'subtract': subrtact,
+        'multiply': multiply,
+        'divide': divide,
+    }
+
+    path = path.strip('/').split('/')
+
+    func_name = path[0]
+    args = path[1:]
+
+    try:
+        func = funcs[func_name]
+    except KeyError:
+        raise NameError
 
     return func, args
+
 
 def application(environ, start_response):
     # TODO: Your application code from the book database
@@ -76,9 +136,33 @@ def application(environ, start_response):
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [("Content-type", "text/html")]
+    try:
+        path = environ.get('PATH_INFO', None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 OK"
+    except NameError:
+        status = "404 Not Found"
+        body = "<h1>Not Found</h1>"
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "<h1>Internal Server Error</h1>"
+        print(traceback.format_exc())
+    except ZeroDivisionError:
+        status = "Can not divide by zero"
+        body = "<h1>Zero Division Error.  Please Try again!!</h1>"
+    finally:
+        headers.append(('Content-length', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
 
 if __name__ == '__main__':
     # TODO: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
-    pass
+
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
