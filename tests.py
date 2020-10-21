@@ -2,6 +2,7 @@ import unittest
 import subprocess
 import http.client
 import random
+import time
 
 
 class WebTestCase(unittest.TestCase):
@@ -16,6 +17,7 @@ class WebTestCase(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
+        time.sleep(.25)
 
     def tearDown(self):
         self.server_process.kill()
