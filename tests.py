@@ -2,6 +2,7 @@ import unittest
 import subprocess
 import http.client
 import random
+import time
 
 
 class WebTestCase(unittest.TestCase):
@@ -16,6 +17,9 @@ class WebTestCase(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
+        # Had to pause the code here for a second to let the sun processes finish
+        # otherwise if we don't all the tests will fail.
+        time.sleep(1)
 
     def tearDown(self):
         self.server_process.kill()
@@ -25,9 +29,10 @@ class WebTestCase(unittest.TestCase):
         """
         Helper function to get a response from a given url, using http.client
         """
-
         conn = http.client.HTTPConnection('localhost:8080')
+
         conn.request('GET', url)
+        #time.sleep(1)
 
         response = conn.getresponse()
         self.assertEqual(200, response.getcode())
@@ -40,7 +45,6 @@ class WebTestCase(unittest.TestCase):
         """
         A call to /add/a/b yields a + b
         """
-
         a = random.randint(100, 10000)
         b = random.randint(100, 10000)
 
@@ -48,14 +52,12 @@ class WebTestCase(unittest.TestCase):
 
         response = self.get_response(path)
         self.assertEqual(200, response.getcode())
-
         self.assertIn(str(a + b).encode(), response.read())
 
     def test_multiply(self):
         """
         A call to /multiply/a/b yields a*b
         """
-
         a = random.randint(100, 10000)
         b = random.randint(100, 10000)
 
@@ -63,14 +65,12 @@ class WebTestCase(unittest.TestCase):
 
         response = self.get_response(path)
         self.assertEqual(200, response.getcode())
-
         self.assertIn(str(a*b).encode(), response.read())
 
     def test_subtract_positive_result(self):
         """
         A call to /subtract/a/b yields a - b, for a > b
         """
-
         a = random.randint(10000, 100000)
         b = random.randint(100, 1000)
 
@@ -78,14 +78,12 @@ class WebTestCase(unittest.TestCase):
 
         response = self.get_response(path)
         self.assertEqual(200, response.getcode())
-
         self.assertIn(str(a - b).encode(), response.read())
 
     def test_subtract_negative_result(self):
         """
         A call to /subtract/a/b yields a - b, for a < b
         """
-
         a = random.randint(100, 1000)
         b = random.randint(10000, 100000)
 
@@ -93,16 +91,13 @@ class WebTestCase(unittest.TestCase):
 
         response = self.get_response(path)
         self.assertEqual(200, response.getcode())
-
         self.assertIn(str(a - b).encode(), response.read())
 
     def test_divide(self):
         """
         A call to /divide/a/b yields a/b, for a % b = 0
         """
-
         result = random.randint(2, 10)
-
         b = random.randint(100, 1000)
         a = result * b
 
@@ -110,7 +105,6 @@ class WebTestCase(unittest.TestCase):
 
         response = self.get_response(path)
         self.assertEqual(200, response.getcode())
-
         self.assertIn(str(result).encode(), response.read())
 
     def test_index_instructions(self):

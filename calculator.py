@@ -1,147 +1,78 @@
-"""
-For your homework this week, you'll be creating a wsgi application of
-your own.
-
-You'll create an online calculator that can perform several operations.
-
-You'll need to support:
-
-  * Addition
-  * Subtractions
-  * Multiplication
-  * Division
-
-Your users should be able to send appropriate requests and get back
-proper responses. For example, if I open a browser to your wsgi
-application at `http://localhost:8080/multiple/3/5' then the response
-body in my browser should be `15`.
-
-Consider the following URL/Response body pairs as tests:
-
-```
-  http://localhost:8080/multiply/3/5   => 15
-  http://localhost:8080/add/23/42      => 65
-  http://localhost:8080/subtract/23/42 => -19
-  http://localhost:8080/divide/22/11   => 2
-  http://localhost:8080/               => <html>Here's how to use this page...</html>
-```
-
-To submit your homework:
-
-  * Fork this repository (Session03).
-  * Edit this file to meet the homework requirements.
-  * Your script should be runnable using `$ python calculator.py`
-  * When the script is running, I should be able to view your
-    application in my browser.
-  * I should also be able to see a home page (http://localhost:8080/)
-    that explains how to perform calculations.
-  * Commit and push your changes to your fork.
-  * Submit a link to your Session03 fork repository!
+#!/usr/bin/env python
 
 
-"""
-def homepage():
-    all_books = DB.titles()
-    body = ['<h1>Calculator</h1>', '<ul>']
-    item_template = '<li><a href="/book/{id}">{title}</a></li>'
-    for book in all_books:
-        body.append(item_template.format(**book))
-    body.append('</ul>')
+
+
+import re
+import functools
+
+DEFAULT = "No Value Set"
+
+
+def index():
+    funcs = ['add', 'subtract', 'multiply', 'divide']
+
+    body = ['<h1>Calculator!!</h1>', '<h2>To use this calculator, select the<br>'
+            ' operation below and add a "/" between each<br>'
+            ' number in the URL address bar.  <br> <br>   Ex: /multiply/3/5</h2>', '<br>',]
+
+    item_template = '<ul><li><a href="/{0}/">{0} numbers</a></li>'
+    for func in funcs:
+        body.append(item_template.format(func))
+        body.append('</ul>')
     return '\n'.join(body)
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
-
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
-    for item in args:
-        sum += item
-    return sum
+    response_body = '<h1>Your total is: {0}</h1><br><a href="/">Back to the list of operations</a>'.format(str(sum(map(int, args))))
+    return response_body
 
 def subtract(*args):
     """ Returns a STRING with the sum of the arguments """
-
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
-    for item in args:
-        sum -= item
-    return sum
+    if len(args) == 0:
+        sum = 0
+    else:
+        sum = functools.reduce(lambda a, b: a - b, map(int, args))
+    response_body = '<h1>Your total is: {0}</h1><br><a href="/">Back to the list of operations</a>'.format(str(sum))
+    return response_body
 
 def multiply(*args):
     """ Returns a STRING with the sum of the arguments """
-
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
-    for item in args:
-        sum *= item
-
-    return sum
+    if len(args) == 0:
+        sum = 0
+    else:
+        sum = functools.reduce(lambda a, b: a * b, map(int, args))
+    response_body = '<h1>Your total is: {0}</h1><br><a href="/">Back to the list of operations</a>'.format(str(sum))
+    return response_body
 
 def divide(*args):
     """ Returns a STRING with the sum of the arguments """
-
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
-    for item in args:
-        sum /= item
-
-    return sum
-
-# TODO: Add functions for handling more arithmetic operations.
-
-def resolve_path(path):
-    """
-    Should return two values: a callable and an iterable of
-    arguments.
-    """
-
-    # TODO: Provide correct values for func and args. The
-    # examples provide the correct *syntax*, but you should
-    # determine the actual values of func and args using the
-    # path.
-    #func = add
-    #args = ['25', '32']
-
-
-    funcs = {
-        '': home,
-        'add': add,
-        'subtract': subrtact,
-        'multiply': multiply,
-        'divide': divide,
-    }
-
-    path = path.strip('/').split('/')
-
-    func_name = path[0]
-    args = path[1:]
-
     try:
-        func = funcs[func_name]
-    except KeyError:
-        raise NameError
-
-    return func, args
+        sum = 0
+        if "0" in args:
+            raise ZeroDivisionError
+        if 0 in args:
+            raise ZeroDivisionError
+        if len(args) == 0:
+            raise ValueError
+        sum = functools.reduce(lambda a, b: a / b, map(int, args))
+        response_body = '<h1>Your total is: {0}</h1><br><a href="/">Back to the list of operations</a>'.format(str(sum))
+        return response_body
+    except ZeroDivisionError:
+        response_body = '<h1>Cannot divide by zero. Try Again!</h1><br><a href="/">Back to the list of operations</a>'
+        return response_body
+    except ValueError:
+        response_body = '<h1>No values were provided for Division Operation.<br>Please provide values and Try Again!' \
+                        '</h1><br><a href="/">Back to the list of operations</a>'
+        return response_body
 
 
 def application(environ, start_response):
-    # TODO: Your application code from the book database
-    # work here as well! Remember that your application must
-    # invoke start_response(status, headers) and also return
-    # the body of the response in BYTE encoding.
-    #
-    # TODO (bonus): Add error handling for a user attempting
-    # to divide by zero.
-    headers = [("Content-type", "text/html")]
+    """Application function used to create a response in bytes bak to the client"""
+
     try:
-        path = environ.get('PATH_INFO', None)
-        if path is None:
-            raise NameError
-        func, args = resolve_path(path)
+        headers = [("Content-type", "text/html")]
+        func, args = resolve_path(environ.get('PATH_INFO', DEFAULT))
         body = func(*args)
         status = "200 OK"
     except NameError:
@@ -150,7 +81,6 @@ def application(environ, start_response):
     except Exception:
         status = "500 Internal Server Error"
         body = "<h1>Internal Server Error</h1>"
-        print(traceback.format_exc())
     except ZeroDivisionError:
         status = "Can not divide by zero"
         body = "<h1>Zero Division Error.  Please Try again!!</h1>"
@@ -159,10 +89,26 @@ def application(environ, start_response):
         start_response(status, headers)
         return [body.encode('utf8')]
 
-if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
 
+def resolve_path(path):
+    """
+    Should return two values: a callable and an iterable of
+    arguments.
+    """
+    funcs = {"": index, "add": add, "subtract": subtract, "multiply": multiply, "divide": divide,}
+
+    path = path.strip('/').split('/')
+    func_name = path[0]
+    args = path[1:]
+
+    try:
+        func = funcs[func_name]
+    except KeyError:
+        raise NameError
+    return func, args
+
+
+if __name__ == '__main__':
     from wsgiref.simple_server import make_server
     srv = make_server('localhost', 8080, application)
     srv.serve_forever()
