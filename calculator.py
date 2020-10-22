@@ -1,7 +1,14 @@
 #!/usr/bin/env python
-
-
-
+"""
+# ------------------------------------------------------------------------ #
+# Title: Lesson 4 - WSGI (The Web Server Gateway Interface) example.  This script
+# is a set of simple calculator web pages allowing the user to pass values in and get
+# calculated values back.
+# Description: This is the main "calculator.py" script.
+# ChangeLog (Who,When,What):
+# ASimpson, 10/21/2020, Modified code to complete lesson4 - Assignment04
+# ------------------------------------------------------------------------ #
+"""
 
 import re
 import functools
@@ -14,7 +21,7 @@ def index():
 
     body = ['<h1>Calculator!!</h1>', '<h2>To use this calculator, select the<br>'
             ' operation below and add a "/" between each<br>'
-            ' number in the URL address bar.  <br> <br>   Ex: /multiply/3/5</h2>', '<br>',]
+            ' number in the URL address bar.  <br> <br>   Ex: /multiply/3/5</h2>', '<br>']
 
     item_template = '<ul><li><a href="/{0}/">{0} numbers</a></li>'
     for func in funcs:
@@ -22,10 +29,13 @@ def index():
         body.append('</ul>')
     return '\n'.join(body)
 
+
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
-    response_body = '<h1>Your total is: {0}</h1><br><a href="/">Back to the list of operations</a>'.format(str(sum(map(int, args))))
+    response_body = '<h1>Your total is: {0}</h1><br><a href="/">Back to the ' \
+                    'list of operations</a>'.format(str(sum(map(int, args))))
     return response_body
+
 
 def subtract(*args):
     """ Returns a STRING with the sum of the arguments """
@@ -36,6 +46,7 @@ def subtract(*args):
     response_body = '<h1>Your total is: {0}</h1><br><a href="/">Back to the list of operations</a>'.format(str(sum))
     return response_body
 
+
 def multiply(*args):
     """ Returns a STRING with the sum of the arguments """
     if len(args) == 0:
@@ -44,6 +55,7 @@ def multiply(*args):
         sum = functools.reduce(lambda a, b: a * b, map(int, args))
     response_body = '<h1>Your total is: {0}</h1><br><a href="/">Back to the list of operations</a>'.format(str(sum))
     return response_body
+
 
 def divide(*args):
     """ Returns a STRING with the sum of the arguments """
@@ -69,7 +81,6 @@ def divide(*args):
 
 def application(environ, start_response):
     """Application function used to create a response in bytes bak to the client"""
-
     try:
         headers = [("Content-type", "text/html")]
         func, args = resolve_path(environ.get('PATH_INFO', DEFAULT))
@@ -95,7 +106,8 @@ def resolve_path(path):
     Should return two values: a callable and an iterable of
     arguments.
     """
-    funcs = {"": index, "add": add, "subtract": subtract, "multiply": multiply, "divide": divide,}
+    funcs = {"": index, "add": add, "subtract": subtract,
+             "multiply": multiply, "divide": divide}
 
     path = path.strip('/').split('/')
     func_name = path[0]
