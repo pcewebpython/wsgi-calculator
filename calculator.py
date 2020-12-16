@@ -24,7 +24,26 @@ import traceback
 
 def home(*args):
     """Returns homepage that explains how to perform calculations"""
-    return 'this is the homepage'
+
+    body = """
+    <h1>WSGI Calculator</h1>
+    <p><i>Here's how to use this page...</i></p>
+
+    <p>This application allows you to add, subtract, multiply or divide two
+    numbers based on the user's URL input.  The first part of the path
+    indicates the operand.  The operand is followed by two numbers to solve
+    the operation.</p>
+
+    <p>Some examples are:
+    <ul>
+    <li>http://localhost:8080/multiply/3/5  yields a result of 15</li>
+    <li>http://localhost:8080/add/23/42  yields a result of 65</li>
+    <li>http://localhost:8080/subtract/23/42  yields a result of -19</li>
+    <li>http://localhost:8080/divide/22/11  yields a result of 2</li>
+    </ul>
+    </p>
+    """
+    return body
 
 
 def add(*args):
@@ -33,7 +52,7 @@ def add(*args):
     result = str(int(args[0]) + int(args[1]))
     body = 'Your total is: {}'.format(result)
 
-    return body
+    return(body + '<p><a href="/">Back to the homepage</a></p>')
 
 
 def subtract(*args):
@@ -42,7 +61,7 @@ def subtract(*args):
     result = str(int(args[0]) - int(args[1]))
     body = 'Your total is: {}'.format(result)
 
-    return body
+    return(body + '<p><a href="/">Back to the homepage</a></p>')
 
 
 def multiply(*args):
@@ -51,7 +70,7 @@ def multiply(*args):
     result = str(int(args[0]) * int(args[1]))
     body = 'Your total is: {}'.format(result)
 
-    return body
+    return(body + '<p><a href="/">Back to the homepage</a></p>')
 
 
 def divide(*args):
@@ -60,7 +79,7 @@ def divide(*args):
     result = str(int(args[0]) / int(args[1]))
     body = 'Your total is: {}'.format(result)
 
-    return body
+    return(body + '<p><a href="/">Back to the homepage</a></p>')
 
 
 def resolve_path(path):
