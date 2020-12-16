@@ -1,21 +1,3 @@
-"""
-Your users should be able to send appropriate requests and get back
-proper responses. For example, if I open a browser to your wsgi
-application at `http://localhost:8080/multiple/3/5' then the response
-body in my browser should be `15`.
-
-Consider the following URL/Response body pairs as tests:
-
-```
-  http://localhost:8080/multiply/3/5   => 15
-  http://localhost:8080/add/23/42      => 65
-  http://localhost:8080/subtract/23/42 => -19
-  http://localhost:8080/divide/22/11   => 2
-  http://localhost:8080/               => <html>Here's how to use this page...</html>
-```
-
-"""
-
 # Stella Kim
 # Assignemt 4: WSGI Calculator
 
@@ -76,8 +58,11 @@ def multiply(*args):
 def divide(*args):
     """Returns a STRING with the quotient of the arguments"""
 
-    result = str(int(args[0]) / int(args[1]))
-    body = 'Your total is: {}'.format(result)
+    try:
+        result = str(int(args[0]) / int(args[1]))
+        body = 'Your total is: {}'.format(result)
+    except ZeroDivisionError:
+        body = 'Error dividing by zero, please enter a non-zero value'
 
     return(body + '<p><a href="/">Back to the homepage</a></p>')
 
@@ -129,9 +114,6 @@ def application(environ, start_response):
         headers.append(('Content-length', str(len(body))))
         start_response(status, headers)
         return [body.encode('utf8')]
-
-    # TODO (bonus): Add error handling for a user attempting
-    # to divide by zero.
 
 
 if __name__ == '__main__':
