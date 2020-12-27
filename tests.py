@@ -30,12 +30,9 @@ class WebTestCase(unittest.TestCase):
 
         conn = http.client.HTTPConnection('localhost:8080')
         conn.request('GET', url)
-
         response = conn.getresponse()
         self.assertEqual(200, response.getcode())
-
         conn.close()
-
         return response
 
     def test_add(self):
