@@ -3,6 +3,13 @@ import subprocess
 import http.client
 import random
 
+"""
+http://localhost:8080/multiply/3/5
+http://localhost:8080/add/23/42
+http://localhost:8080/subtract/23/42
+http://localhost:8080/divide/22/11
+http://localhost:8080/  
+"""
 
 class WebTestCase(unittest.TestCase):
     """tests for the WSGI Calculator"""
