@@ -42,14 +42,37 @@ To submit your homework:
 """
 
 
-def add(*args):
+def add(args):
     """ Returns a STRING with the sum of the arguments """
+    return str(int(args[0]) + int(args[1]))
 
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
-    sum = "0"
+def subtract(args):
+    """ Returns a STRING with the difference of the arguments """
+    return str(int(args[0]) - int(args[1]))
 
-    return sum
+def multiply(args):
+    """ Returns a STRING with the product of the arguments """
+    return str(int(args[0]) * int(args[1]))
+
+def divide(args):
+    """ Returns a STRING with the quotient of the arguments """
+    if args[0] == 0:
+      raise ZeroDivisionError
+    return str(int(args[0]) / int(args[1]))
+
+def index(args):
+    """ Returns instruction page at root """
+    html = """
+<title>Instructions for WSGI calculator</title>
+<h1>Perform calculations on two integer values</h1>
+<ul>add/1/2</ul>
+<ul>subtract/3/4</ul>
+<ul>multiply/5/6</ul>
+<ul>divide/7/8</ul>
+"""
+    return html
+
+
 
 # TODO: Add functions for handling more arithmetic operations.
 
@@ -58,15 +81,28 @@ def resolve_path(path):
     Should return two values: a callable and an iterable of
     arguments.
     """
+    funcs = {
+      '': index,
+      'add': add,
+      'subtract': subtract,
+      'multiply': multiply,
+      'divide': divide
+    }
+    if path == '/':
+      return index, ()
+    # Allows more than or less than two arguments
+    func, args = path.strip('/').split('/', 1)
+    args = args.split('/')
+    if len(args) != 2:
+        raise ValueError("Provide two operands.")
+    try:
+        int(args[0])
+        int(args[1])
+    except ValueError:
+        raise ValueError
 
-    # TODO: Provide correct values for func and args. The
-    # examples provide the correct *syntax*, but you should
-    # determine the actual values of func and args using the
-    # path.
-    func = add
-    args = ['25', '32']
 
-    return func, args
+    return funcs[func], args
 
 def application(environ, start_response):
     # TODO: Your application code from the book database
@@ -76,9 +112,34 @@ def application(environ, start_response):
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [('Content-type', 'text/html')]
+
+    try:
+        path=environ.get('PATH_INFO',None)
+        if not path:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(args)
+        status = "200 OK"
+    # except NameError:
+    #     status = "404 Not Found"
+    #     body = "<h1>Not Found</h1>"
+    except ValueError:
+        status="400 Bad Request"
+        body="<h1>Arguments must be two numbers</h1>"
+    except ZeroDivisionError:
+        status="400 Bad Request"
+        body="<h1>Cannot divide by zero</h1>"
+    except:
+        status = "500 Internal Server Error"
+        body = "<h1>Intentionally Vague Server Error</h1>"
+    finally:
+        headers.append(("Content-Length", str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
+
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
