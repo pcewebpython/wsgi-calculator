@@ -28,8 +28,26 @@ Consider the following URL/Response body pairs as tests:
   http://localhost:8080/               => <html>Here's how to use this page...</html>
 ```
 """
+
+op_output = 'Your Answer is: '
+
 def operations():
-  return '<h1>Operations</h1>'
+  """ Returns a STRING with instructions """
+  body = [
+    '<title>WSGI Calculator</title>',
+    '<h1>Operations</h1>',
+    '<p1>Select an operation. Then append the web address with /(any number you want)/(any number you want)</p1>',
+    '<ul>']
+
+  ops = ['Add','Subtract','Multiply','Divide']
+
+  item_template = '<li><a href="/{0}">{1}</a></li>'
+
+  for item in ops:
+    body.append(item_template.format(item.lower(),item))
+  body.append('</ul>')
+
+  return '\n'.join(body)
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
@@ -39,35 +57,43 @@ def add(*args):
     for item in args:
       sum += int(item)
 
-    return str(sum)
+    return op_output + str(sum)
 
 def subtract(*args):
     """Return a STRING with the difference of the arguments"""
     in_list = [int(x) for x in args]
 
-    diff = in_list.pop(0)
+    try:
+      diff = in_list.pop(0)
+    except IndexError:
+      diff = 0
 
     for item in in_list:
       diff -= item
 
-    return str(diff)
+    return op_output + str(diff)
 
 def multiply(*args):
    """Return a STRING with the product of the arguments"""
    in_list = [int(x) for x in args]
-
-   prod = in_list.pop(0)
+   try:
+      prod = in_list.pop(0)
+   except IndexError:
+     prod = 0
 
    for item in in_list:
      prod *= item
 
-   return str(prod)
+   return op_output + str(prod)
 
 def divide(*args):
-   """Return a STRING with quotent of the arguments"""
+   """Return a STRING with quotent of the arguments""" 
    in_list = [int(x) for x in args]
 
-   quot = in_list.pop(0)
+   try:
+      quot = in_list.pop(0)
+   except IndexError:
+      quot = 0
 
    if 0 in in_list:
      raise ValueError
@@ -75,8 +101,7 @@ def divide(*args):
    for item in in_list:
      quot /= item
 
-   return str(quot)
-
+   return op_output +  str(quot)
 
 def resolve_path(path):
     """
