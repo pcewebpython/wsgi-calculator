@@ -43,6 +43,17 @@ def add(*args):
 
     return str(sum)
 
+def subtract(*args):
+    """Return a STRING with the difference of the arguments"""
+    in_list = [int(x) for x in args]
+
+    diff = in_list.pop(0)
+
+    for item in in_list:
+      diff -= item
+
+    return str(diff)
+
 # TODO: Add functions for handling more arithmetic operations.
 
 def resolve_path(path):
@@ -59,6 +70,7 @@ def resolve_path(path):
     funcs = {
         '' : operations,
         'add' : add,
+        'subtract': subtract,
     }
 
     path = path.strip('/').split('/')
