@@ -1,3 +1,5 @@
+import re
+import traceback
 """
 For your homework this week, you'll be creating a wsgi application of
 your own.
@@ -25,20 +27,6 @@ Consider the following URL/Response body pairs as tests:
   http://localhost:8080/divide/22/11   => 2
   http://localhost:8080/               => <html>Here's how to use this page...</html>
 ```
-
-To submit your homework:
-
-  * Fork this repository (Session03).
-  * Edit this file to meet the homework requirements.
-  * Your script should be runnable using `$ python calculator.py`
-  * When the script is running, I should be able to view your
-    application in my browser.
-  * I should also be able to see a home page (http://localhost:8080/)
-    that explains how to perform calculations.
-  * Commit and push your changes to your fork.
-  * Submit a link to your Session03 fork repository!
-
-
 """
 
 
@@ -79,6 +67,6 @@ def application(environ, start_response):
     pass
 
 if __name__ == '__main__':
-    # TODO: Insert the same boilerplate wsgiref simple
-    # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
