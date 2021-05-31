@@ -62,6 +62,17 @@ def multiply(*args):
      prod *= item
 
    return str(prod)
+
+def divide(*args):
+   """Return a STRING with quotent of the arguments"""
+   in_list = [int(x) for x in args]
+
+   quot = in_list.pop(0)
+
+   for item in in_list:
+     quot /= item
+
+   return str(quot)
 # TODO: Add functions for handling more arithmetic operations.
 
 def resolve_path(path):
@@ -80,6 +91,7 @@ def resolve_path(path):
         'add' : add,
         'subtract': subtract,
         'multiply': multiply,
+        'divide' : divide,
     }
 
     path = path.strip('/').split('/')
