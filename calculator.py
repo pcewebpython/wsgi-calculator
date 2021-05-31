@@ -34,8 +34,6 @@ def operations():
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
 
-    # TODO: Fill sum with the correct value, based on the
-    # args provided.
     sum = 0
 
     for item in args:
@@ -54,6 +52,16 @@ def subtract(*args):
 
     return str(diff)
 
+def multiply(*args):
+   """Return a STRING with the product of the arguments"""
+   in_list = [int(x) for x in args]
+
+   prod = in_list.pop(0)
+
+   for item in in_list:
+     prod *= item
+
+   return str(prod)
 # TODO: Add functions for handling more arithmetic operations.
 
 def resolve_path(path):
@@ -71,6 +79,7 @@ def resolve_path(path):
         '' : operations,
         'add' : add,
         'subtract': subtract,
+        'multiply': multiply,
     }
 
     path = path.strip('/').split('/')
