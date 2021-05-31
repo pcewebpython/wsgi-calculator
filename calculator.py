@@ -28,7 +28,8 @@ Consider the following URL/Response body pairs as tests:
   http://localhost:8080/               => <html>Here's how to use this page...</html>
 ```
 """
-
+def operations():
+  return '<h1>Operations</h1>'
 
 def add(*args):
     """ Returns a STRING with the sum of the arguments """
@@ -51,8 +52,21 @@ def resolve_path(path):
     # examples provide the correct *syntax*, but you should
     # determine the actual values of func and args using the
     # path.
-    func = add
-    args = ['25', '32']
+
+    funcs = {
+        '' : operations,
+        'add' : add,
+    }
+
+    path = path.strip('/').split('/')
+
+    func_name = path[0]
+    args = path[1:]
+
+    try:
+        func = funcs[func_name]
+    except KeyError:
+        raise NameError
 
     return func, args
 
