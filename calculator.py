@@ -36,9 +36,12 @@ def add(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    sum = "0"
+    sum = 0
 
-    return sum
+    for item in args:
+      sum += int(item)
+
+    return str(sum)
 
 # TODO: Add functions for handling more arithmetic operations.
 
