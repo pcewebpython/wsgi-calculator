@@ -40,6 +40,29 @@ To submit your homework:
 
 
 """
+import re
+import traceback
+import pdb
+
+def how_to_index():
+    index = """
+    <html>
+    <head><basic Calculator</title></head>
+    <h1>Calculator</h1>
+    <h2>multiply</h2>
+   <p> <a href="http://localhost:8080/multiply/3/5">http://localhost:8080/multiply/3/5</a>   => 15 </p>
+   <h2>Addition</h2>
+   <p> <a href="http://localhost:8080/add/23/42">http://localhost:8080/add/23/42</a>      => 65 </p>
+   <h2>subtract</h2>
+   <p> <a href="http://localhost:8080/subtract/23/42">http://localhost:8080/subtract/23/42</a> => -19 </p>
+   <h2>divide</h2>
+   <p> <a href="http://localhost:8080/divide/22/11">http://localhost:8080/divide/22/11</a>  => 2 </p>
+   <h2>main</h2>
+   <p> <a href="http://localhost:8080">http://localhost:8080</a> => Here's how to use this page.. </p>
+    </html>
+    """
+    return index
+
 
 
 def add(*args):
@@ -47,11 +70,97 @@ def add(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    sum = "0"
+    page = """<html>
+    <head>
+        <title>Addition</title>
+    </head>
+        <body>
+       <table>
+    <tr><th>Addition of {} and {} is = </th><td>{}</td></tr>
+    </table>
+<a href="/">Back to the list</a>
+    </body>
+</html>"""
+ 
 
-    return sum
+    nums = []
+    for arg in args:
+        nums.append(arg)
+    sum_nums = int(nums[0])+int(nums[1])
+    #pdb.set_trace()
+    return page.format(*args,str(sum_nums))
 
-# TODO: Add functions for handling more arithmetic operations.
+
+def multiply(*args):
+    """ Returns a STRING with the sum of the arguments """
+
+    # TODO: Fill sum with the correct value, based on the
+    # args provided.
+    page = """<html>
+    <head>
+        <title>Multiplication</title>
+    </head>
+        <body>
+       <table>
+    <tr><th>Multiplication of {} and {} is = </th><td>{}</td></tr>
+    </table>
+<a href="/">Back to the list</a>
+    </body>
+</html>"""
+    nums = []
+    for arg in args:
+        nums.append(arg)
+    mul_nums = int(nums[0])*int(nums[1])
+    #pdb.set_trace()
+    return page.format(*args, str(mul_nums))
+
+
+def subtract(*args):
+    """ Returns a STRING with the sum of the arguments """
+
+    # TODO: Fill sum with the correct value, based on the
+    # args provided.
+    page = """<html>
+    <head>
+        <title>Subtraction</title>
+    </head>
+        <body>
+       <table>
+    <tr><th>Subtraction of {} and {} is = </th><td>{}</td></tr>
+    </table>
+<a href="/">Back to the list</a>
+    </body>
+</html>"""
+    nums = []
+    for arg in args:
+        nums.append(arg)
+    subtra_nums = int(nums[0])-int(nums[1])
+    #pdb.set_trace()
+    return page.format(*args, str(subtra_nums))
+
+
+def divide(*args):
+    """ Returns a STRING with the sum of the arguments """
+
+    # TODO: Fill sum with the correct value, based on the
+    # args provided.
+    page = """<html>
+    <head>
+        <title>Division</title>
+    </head>
+        <body>
+       <table>
+    <tr><th>Division of {} and {} is = </th><td>{}</td></tr>
+    </table>
+<a href="/">Back to the list</a>
+    </body>
+</html>"""
+    nums = []
+    for arg in args:
+        nums.append(arg)
+    div_nums = int(nums[0])/int(nums[1])
+    #pdb.set_trace()
+    return page.format(*args, str(div_nums))
 
 def resolve_path(path):
     """
@@ -63,10 +172,29 @@ def resolve_path(path):
     # examples provide the correct *syntax*, but you should
     # determine the actual values of func and args using the
     # path.
-    func = add
-    args = ['25', '32']
+    # func = add
+    # args = ['25', '32']
+    funcs = {
+        '': how_to_index,
+        'add': add,
+        'multiply': multiply,
+        'subtract': subtract,
+        'divide': divide,
+    }
+
+    path = path.strip('/').split('/')
+    func_name = path[0]
+    args = path[1:]
+    try:
+        func = funcs[func_name]
+    except KeyError:
+        raise NameError
+    # if len(args) != 2:
+    #     raise NotImplementedError("Exactly two arguments are allowed")
+
 
     return func, args
+    
 
 def application(environ, start_response):
     # TODO: Your application code from the book database
@@ -76,9 +204,33 @@ def application(environ, start_response):
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [('Content-type', 'text/html')]
+    try:
+        path = environ.get('PATH_INFO', None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 OK"
+    except NameError:
+        status = "404 Not found"
+        body = "<h1>Not found</h1>"
+    except Exception:
+        status = "500 Internal server Error"
+        body = "<h1>Internal server Error</h1>"
+        print(traceback.format_exc())
+    # except NotImplementedError():
+    #     status = "501 Not implemented"
+    #     body = "<h1>Not implemented</h1>"
+    #     print(traceback.format_exc())
+    finally:
+        headers.append(('content-length', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
 
 if __name__ == '__main__':
     # TODO: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('localhost', 8080, application)
+    srv.serve_forever()
